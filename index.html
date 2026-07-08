@@ -2,144 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
-    <title>Horizon Cruise: Realistic Ridge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Starry Midnight Horizon Cruise</title>
     <style>
-        :root {
-            --glass: rgba(240, 230, 210, 0.15);
-            --border: rgba(0, 0, 0, 0.1);
-            --bg-dark: #d7b889;
-            --text: #333333;
-        }
-
         * {
             box-sizing: border-box;
             user-select: none;
-            -webkit-user-select: none;
             margin: 0;
             padding: 0;
-            font-family: sans-serif;
         }
 
         body, html {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: var(--bg-dark);
-            color: var(--text);
+            background: #020617;
+            font-family: monospace, sans-serif;
         }
 
         #game-container {
             position: relative;
             width: 100vw;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
         canvas {
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            background: #e2c092;
+            background: #020617;
         }
 
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(226, 192, 146, 0.85);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s;
-        }
-
-        .screen.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 360px;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: #4a3e3d;
-            margin-bottom: 25px;
-        }
-
-        .btn {
-            background: #4a3e3d;
-            border: none;
-            color: #fff;
-            padding: 14px 30px;
-            font-size: 1rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-        }
-
-        .btn:hover {
-            background: #635251;
-        }
-
-        /* ছবির মতো মিনিমালিস্ট বটম HUD */
+        /* ওএসডি ডিসপ্লে লার্জ এবং ক্লিয়ার ইন্টারফেস */
         #hud-container {
             position: absolute;
-            bottom: 40px;
+            bottom: 50px;
             width: 100%;
             display: flex;
             justify-content: space-between;
             padding: 0 10%;
             pointer-events: none;
-            z-index: 5;
-            display: none;
-            color: #4c4644;
-            font-size: 1.3rem;
-            font-weight: 500;
-            opacity: 0.85;
+            z-index: 10;
+            color: #e2e8f0;
+            font-size: 1.6rem;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
-        .hud-text {
-            font-family: monospace, sans-serif;
-            letter-spacing: 1px;
+        .hud-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
         .hud-sub {
-            font-size: 0.75rem;
-            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
             opacity: 0.7;
-            text-align: center;
-            margin-top: 2px;
+            letter-spacing: 2px;
+            margin-top: 4px;
         }
 
-        /* মোবাইল টাচ বাটন */
-        #touch-controls { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6; display: none; }
-        .touch-btn { position: absolute; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 50%; pointer-events: auto; display: flex; justify-content: center; align-items: center; color: #333; font-weight: bold; font-size: 1.2rem; width: 75px; height: 75px; }
-        #btn-left { bottom: 30px; left: 30px; }
-        #btn-right { bottom: 30px; left: 120px; }
-        #btn-accel { bottom: 30px; right: 30px; background: rgba(0,0,0,0.08); }
-        #btn-brake { bottom: 30px; right: 120px; }
+        #autodrive-text {
+            font-size: 0.9rem;
+            align-self: flex-end;
+            letter-spacing: 2px;
+            color: #38bdf8;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -147,164 +82,114 @@
 <div id="game-container">
     <canvas id="gameCanvas"></canvas>
 
-    <!-- ছবির অবিকল ডাউন-স্ক্রিন ওএসডি HUD -->
     <div id="hud-container">
-        <div>
-            <div id="hud-miles" class="hud-text">0.0</div>
+        <div class="hud-block">
+            <div id="hud-miles">6.7</div>
             <span class="hud-sub">miles</span>
         </div>
-        <div style="font-size: 0.8rem; align-self: flex-end; letter-spacing: 2px; opacity: 0.6;">[ autodrive on ]</div>
-        <div style="text-align: right;">
-            <div id="hud-mph" class="hud-text">0.0</div>
+        <div id="autodrive-text">[ autodrive on ]</div>
+        <div class="hud-block">
+            <div id="hud-mph">77.4</div>
             <span class="hud-sub">mph</span>
-        </div>
-    </div>
-
-    <!-- Mobile Controls -->
-    <div id="touch-controls">
-        <div id="btn-left" class="touch-btn">◀</div>
-        <div id="btn-right" class="touch-btn">▶</div>
-        <div id="btn-accel" class="touch-btn">GAS</div>
-        <div id="btn-brake" class="touch-btn">BRK</div>
-    </div>
-
-    <!-- MAIN MENU -->
-    <div id="menu-main" class="screen active">
-        <div class="glass-panel">
-            <h1>HORIZON CRUISE</h1>
-            <button class="btn" onclick="Game.start()">Drive Car</button>
         </div>
     </div>
 </div>
 
 <script>
 const Game = {
-    canvas: null, ctx: null, running: false, lastTime: 0,
-    segments: [], segmentLength: 200, trackLength: null, cameraDepth: null, cameraHeight: 1100,
-    playerX: 0, position: 0, speed: 0, maxSpeed: 120, accel: 45, handling: 2.0,
-    keys: { left: false, right: false, accel: false, brake: false },
-    skyOffset: 0, hills: [],
+    canvas: null, ctx: null,
+    segments: [], segmentLength: 150, trackLength: null, cameraDepth: null, cameraHeight: 700,
+    playerX: 0, position: 0, speed: 77.4,
+    skyOffset: 0, stars: [], flowers: [],
 
     init() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         window.addEventListener('resize', () => this.resize());
         this.resize();
-        this.bindInput();
-        this.generateHills();
+        this.generateEnvironment();
+        this.buildTrack();
+        this.loop();
     },
     resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
-        this.cameraDepth = 1 / Math.tan((85 / 2) * Math.PI / 180);
+        // প্রজেকশন ফিক্স যেন কোনো স্ক্রিনেই রোড গায়েব না হয়
+        this.cameraDepth = 1 / Math.tan((80 / 2) * Math.PI / 180);
     },
-    generateHills() {
-        // ছবির পেছনের পাহাড়ি ঢেউ ও উপত্যকা জেনারেট করা
-        this.hills = [];
-        let numHills = 30;
-        for(let i=0; i<numHills; i++) {
-            this.hills.push({
-                x: (i / numHills) * window.innerWidth * 3,
-                y: 220 + Math.sin(i * 1.5) * 40,
-                r: 300 + Math.random() * 200
+    generateEnvironment() {
+        // ১. প্রথম ছবির মতো চমৎকার তারামণ্ডল ও গ্যালাক্সি ডাস্ট
+        this.stars = [];
+        for(let i=0; i<300; i++) {
+            this.stars.push({
+                x: Math.random() * window.innerWidth * 2,
+                y: Math.random() * (window.innerHeight * 0.65),
+                size: Math.random() * 2.5 + 0.5,
+                alpha: Math.random() * 0.5 + 0.5
             });
         }
-    },
-    bindInput() {
-        const handler = (e, status) => {
-            if (e.key === 'ArrowUp' || e.key === 'w') this.keys.accel = status;
-            if (e.key === 'ArrowDown' || e.key === 's') this.keys.brake = status;
-            if (e.key === 'ArrowLeft' || e.key === 'a') this.keys.left = status;
-            if (e.key === 'ArrowRight' || e.key === 'd') this.keys.right = status;
-        };
-        window.addEventListener('keydown', (e) => handler(e, true));
-        window.addEventListener('keyup', (e) => handler(e, false));
 
-        if('ontouchstart' in window) {
-            document.getElementById('touch-controls').style.display = 'block';
-            const setupTouch = (id, keyName) => {
-                let el = document.getElementById(id);
-                el.addEventListener('touchstart', (e) => { e.preventDefault(); this.keys[keyName] = true; });
-                el.addEventListener('touchend', (e) => { e.preventDefault(); this.keys[keyName] = false; });
-            };
-            setupTouch('btn-left', 'left'); setupTouch('btn-right', 'right');
-            setupTouch('btn-accel', 'accel'); setupTouch('btn-brake', 'brake');
+        // ২. মাঠের ভেতরে উজ্জ্বল নীল ও সোনালী ফুল (Glowing Magic Flowers)
+        this.flowers = [];
+        for(let i=0; i<150; i++) {
+            this.flowers.push({
+                x: Math.random() * window.innerWidth,
+                y: (window.innerHeight * 0.45) + Math.random() * (window.innerHeight * 0.55),
+                size: Math.random() * 3 + 2,
+                color: Math.random() > 0.3 ? '#38bdf8' : '#fbbf24' // নীল ও গোল্ডেন ফুল
+            });
         }
     },
     buildTrack() {
         this.segments = [];
-        for(let i=0; i<600; i++) {
+        // ছবির মতো নিখুঁত কার্ভ ট্র্যাকিং লুপ
+        for(let i=0; i<1000; i++) {
             let curve = 0;
-            // ছবির মতো সুন্দর মৃদু বাঁকানো দীর্ঘ রাস্তা
-            if (i > 40 && i < 220) curve = 1.8;
-            if (i > 280 && i < 480) curve = -1.5;
+            if (i > 30 && i < 150) curve = 1.5;
+            if (i > 220 && i < 400) curve = -2.0;
+            if (i > 500 && i < 700) curve = 2.5;
 
             this.segments.push({
                 index: i,
-                p1: { world: { x: 0, y: Math.sin(i/20)*40, z: i * this.segmentLength }, screen: {} },
-                p2: { world: { x: 0, y: Math.sin((i+1)/20)*40, z: (i + 1) * this.segmentLength }, screen: {} },
+                p1: { world: { x: 0, y: Math.sin(i/15)*60, z: i * this.segmentLength }, screen: {} },
+                p2: { world: { x: 0, y: Math.sin((i+1)/15)*60, z: (i + 1) * this.segmentLength }, screen: {} },
                 curve: curve
             });
         }
         this.trackLength = this.segments.length * this.segmentLength;
     },
-    start() {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('hud-container').style.display = 'flex';
-        
-        this.position = 0; this.playerX = -0.15; this.speed = 40; // ছবির মতো হালকা বামে পজিশন
-        this.buildTrack();
-        this.running = true; this.lastTime = performance.now();
-        requestAnimationFrame((t) => this.loop(t));
-    },
-    loop(time) {
-        if (!this.running) return;
-        let dt = (time - this.lastTime) / 1000;
-        if(dt > 0.1) dt = 0.1;
-        this.lastTime = time;
-
-        this.update(dt);
+    loop() {
+        this.update();
         this.render();
-        requestAnimationFrame((t) => this.loop(t));
+        requestAnimationFrame(() => this.loop());
     },
-    update(dt) {
-        // অটোড্রাইভ এবং ম্যানুয়াল থ্রোটল ব্যালেন্স
-        if (this.keys.accel) this.speed += this.accel * dt;
-        else if (this.keys.brake) this.speed -= (this.accel * 2) * dt;
-        else {
-            // স্থির গতি বজায় রাখা ছবির মতো (প্রায় 77 mph)
-            if(this.speed < 77) this.speed += 10 * dt;
-            if(this.speed > 77) this.speed -= 10 * dt;
-        }
+    update() {
+        let dt = 0.016; // স্মুথ ফিক্সড টাইমস্টেপ
+        this.position += this.speed * 8 * dt;
 
-        if (this.speed > this.maxSpeed) this.speed = this.maxSpeed;
-        if (this.speed < 0) this.speed = 0;
-
-        this.position += this.speed * 5 * dt;
         let seg = this.findSegment(this.position);
+        // অটোড্রাইভ বাঁক লজিক
+        this.playerX -= (this.speed / 100) * seg.curve * 0.0025;
+        this.skyOffset += seg.curve * 0.05;
 
-        if (this.keys.left) this.playerX -= this.handling * dt;
-        if (this.keys.right) this.playerX += this.handling * dt;
-        
-        // রাস্তার মোড় অনুযায়ী গাড়ি আলতো বাঁকানো
-        this.playerX -= (this.speed / this.maxSpeed) * seg.curve * 0.0025;
-        if (this.playerX > 1.8) this.playerX = 1.8;
-        if (this.playerX < -1.8) this.playerX = -1.8;
+        if (this.position >= this.trackLength) this.position = 0;
 
-        this.skyOffset += seg.curve * 0.06 * (this.speed / this.maxSpeed);
-
-        if(this.position >= this.trackLength - 500) {
-            this.position = 0; // ইনফিনিটি লুপ ক্রুজ
-        }
-
-        // ওএসডি ও ড্যাশবোর্ড আপডেট (ছবির ভ্যালু ম্যাচ করে)
-        document.getElementById('hud-mph').innerText = (this.speed).toFixed(1);
-        document.getElementById('hud-miles').innerText = (6.3 + (this.position / 100000)).toFixed(1);
+        // HUD রিয়েলটাইম রিডিং আপডেট
+        document.getElementById('hud-miles').innerText = (6.7 + (this.position / 80000)).toFixed(1);
+        let fluctuatingSpeed = 77.4 + Math.sin(performance.now()/300)*0.4;
+        document.getElementById('hud-mph').innerText = fluctuatingSpeed.toFixed(1);
     },
-    findSegment(z) { return this.segments[Math.floor(z / this.segmentLength) % this.segments.length]; },
+    findSegment(z) { 
+        return this.segments[Math.floor(z / this.segmentLength) % this.segments.length]; 
+    },
     project(p, cameraX, cameraY, cameraZ, width, height) {
-        let worldX = p.world.x - cameraX, worldY = p.world.y - cameraY, worldZ = p.world.z - cameraZ;
+        let worldX = p.world.x - cameraX;
+        let worldY = p.world.y - cameraY;
+        let worldZ = p.world.z - cameraZ;
+        
+        if (worldZ <= 0) worldZ = 1; 
         let scale = this.cameraDepth / worldZ;
+        
         p.screen.x = Math.round((width / 2) + (scale * worldX * width / 2));
         p.screen.y = Math.round((height / 2) - (scale * worldY * height / 2));
         p.screen.w = Math.round(scale * width);
@@ -314,129 +199,135 @@ const Game = {
         let ctx = this.ctx;
         ctx.clearRect(0, 0, w, h);
 
-        // ১. ছবির মতো নিখুঁত সোনালী/হলুদাভ গোধূলি আকাশ (Warm Evening Sky Gradient)
-        let skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.45);
-        skyGrad.addColorStop(0, "#e8be91");
-        skyGrad.addColorStop(0.6, "#eccfa7");
-        skyGrad.addColorStop(1, "#f2dfbe");
-        ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, w, h);
+        // ১. ছবির মতো ড্রামাটিক ডার্ক ব্লু নাইট স্কাই গ্রাডিয়েন্ট
+        let skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.5);
+        skyGrad.addColorStop(0, "#01040d");
+        skyGrad.addColorStop(0.4, "#031026");
+        skyGrad.addColorStop(0.8, "#08254f");
+        skyGrad.addColorStop(1, "#1e40af");
+        ctx.style = skyGrad; ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, w, h);
 
-        // ২. ছবির মতো ব্যাকগ্রাউন্ডের হালকা হলুদ-সবুজ পাহাড়শ্রেণী (Rolling Hills)
-        ctx.fillStyle = "#c5b682";
-        this.hills.forEach((hill, idx) => {
-            let cx = (hill.x - this.skyOffset * 110) % (w * 2);
-            if(cx < -hill.r) cx += w * 2;
-            ctx.beginPath();
-            ctx.arc(cx, h * 0.45 + Math.sin(idx)*15, hill.r, Math.PI, 0);
-            ctx.fill();
+        // ২. ঝকঝকে তারা এবং মিল্কিওয়ে ডাস্ট এনিমেশন
+        this.stars.forEach(star => {
+            let cx = (star.x - this.skyOffset * 10) % (w * 2);
+            if (cx < 0) cx += (w * 2);
+            if (cx < w) {
+                ctx.fillStyle = `rgba(56, 189, 248, ${star.alpha * (0.7 + Math.random()*0.3)})`;
+                ctx.beginPath();
+                ctx.arc(cx, star.y, star.size, 0, Math.PI*2);
+                ctx.fill();
+            }
         });
 
-        // ৩. থ্রিডি ট্র্যাক ও ঘাস রেন্ডারিং লুপ
+        // ৩. প্রজেক্টেড গ্রাসল্যান্ড উপত্যকা এবং থ্রিডি রোড ড্রয়িং লুপ
         let baseSegment = this.findSegment(this.position);
         let basePercent = (this.position % this.segmentLength) / this.segmentLength;
         let currentCamZ = this.position - (basePercent * this.segmentLength);
-        let camHeight = this.cameraHeight + (Math.sin(baseSegment.index/20)*40);
+        let camHeight = this.cameraHeight + (Math.sin(baseSegment.index/15)*60);
 
         let maxy = h;
         let cameraX = this.playerX * 1000;
 
-        for(let n=0; n<110; n++) {
+        for(let n=0; n<130; n++) {
             let segment = this.segments[(baseSegment.index + n) % this.segments.length];
             let loopModifier = (segment.index < baseSegment.index) ? this.trackLength : 0;
             
             this.project(segment.p1, cameraX, camHeight, currentCamZ - loopModifier, w, h);
             this.project(segment.p2, cameraX, camHeight, currentCamZ - loopModifier, w, h);
 
-            cameraX -= segment.curve * 1.5;
-            if((segment.p1.world.z - currentCamZ <= this.cameraDepth) || (segment.p2.screen.y >= maxy)) continue;
+            cameraX -= segment.curve * 1.8;
+            if(segment.p2.screen.y >= maxy || segment.p1.world.z - currentCamZ <= 0) continue;
 
             let p1 = segment.p1.screen, p2 = segment.p2.screen;
-            let r1 = p1.w * 0.95, r2 = p2.w * 0.95;
+            let r1 = p1.w * 0.9, r2 = p2.w * 0.9; // পারফেক্ট রোড উইডথ
 
-            // ছবির মতো শুকনো হলুদ-সবুজ ঘাসের জমি (Dry Grass Plains)
-            ctx.fillStyle = (segment.index % 2 === 0) ? "#b0aa6e" : "#b8b175";
+            // ছবির মতো গাঢ় সবুজ জাদুকরী ঘাসের মাঠ (Rich Dark Green Plains)
+            ctx.fillStyle = (segment.index % 2 === 0) ? "#041d13" : "#052418";
             ctx.fillRect(0, p2.y, w, p1.y - p2.y);
 
-            // অ্যাসফল্ট ডার্ক গ্রে রোড (Asphalt Grey Road)
-            ctx.fillStyle = "#535152";
-            ctx.beginPath(); ctx.moveTo(p1.x - r1, p1.y); ctx.lineTo(p2.x - r2, p2.y); ctx.lineTo(p2.x + r2, p2.y); ctx.lineTo(p1.x + r1, p1.y); ctx.closePath(); ctx.fill();
+            // মাঝখানের পিচ ঢালা রাস্তা (Asphalt Mid Road)
+            ctx.fillStyle = "#334155";
+            ctx.beginPath(); 
+            ctx.moveTo(p1.x - r1, p1.y); ctx.lineTo(p2.x - r2, p2.y); 
+            ctx.lineTo(p2.x + r2, p2.y); ctx.lineTo(p1.x + r1, p1.y); 
+            ctx.closePath(); ctx.fill();
 
-            // দুই কিনারার সূক্ষ্ম সাদা বর্ডার লাইন (Outer White Lines)
-            ctx.fillStyle = "#e0dbd5";
+            // দুই পাশের সলিড হোয়াইট এজ বর্ডার লাইন
+            ctx.fillStyle = "#f8fafc";
             ctx.fillRect(p1.x - r1, p2.y, p1.w*0.015, p1.y - p2.y);
             ctx.fillRect(p1.x + r1 - p1.w*0.015, p2.y, p1.w*0.015, p1.y - p2.y);
 
-            // মাঝখানের কাটা কাটা ডিভাইডার রোড লাইন (Center Dashed Lines)
-            if(segment.index % 4 === 0) {
-                ctx.fillStyle = "#e0dbd5";
+            // আপনার খোঁজা মাঝখানের রোড লাইন (White Center Dashed Line)
+            if(segment.index % 5 === 0) {
+                ctx.fillStyle = "#f8fafc";
                 ctx.fillRect(p1.x - p1.w*0.01, p2.y, p1.w*0.02, p1.y - p2.y);
             }
 
-            // বাম পাশের স্টিল সেফটি গার্ডরেল বেরিকেট (Metal Guard Rails)
-            let drawSteelBarrier = () => {
-                let bx1 = p1.x - (r1 * 1.05), bx2 = p2.x - (r2 * 1.05);
-                ctx.strokeStyle = "#807e7b";
-                ctx.lineWidth = p1.w * 0.025;
-                ctx.beginPath(); ctx.moveTo(bx1, p1.y - p1.w*0.05); ctx.lineTo(bx2, p2.y - p2.w*0.05); ctx.stroke();
-                
-                // বেরিকেটের স্ট্যান্ড খুটি
-                ctx.fillStyle = "#504f4d";
-                ctx.fillRect(bx1, p1.y - p1.w*0.05, p1.w*0.01, p1.w*0.05);
-            };
-            drawSteelBarrier();
+            // অ্যালুমিনিয়াম সেফটি বেরিকেট/গার্ডরেল (বাম পাশে)
+            let bx1 = p1.x - (r1 * 1.08), bx2 = p2.x - (r2 * 1.08);
+            ctx.strokeStyle = "#94a3b8";
+            ctx.lineWidth = p1.w * 0.02;
+            ctx.beginPath(); ctx.moveTo(bx1, p1.y - p1.w*0.04); ctx.lineTo(bx2, p2.y - p2.w*0.04); ctx.stroke();
+            ctx.fillStyle = "#475569";
+            ctx.fillRect(bx1, p1.y - p1.w*0.04, p1.w*0.008, p1.w*0.04);
 
             maxy = p2.y;
         }
 
-        // ৪. প্লেয়ারের সাদা রঙের স্পোর্টস কার (White Minimalism Car)
-        this.drawTargetCar(w, h);
+        // ৪. মাঠের ওপরে উজ্জ্বল ভাসমান ফুলের এফেক্ট রেন্ডার
+        this.flowers.forEach(fl => {
+            ctx.fillStyle = fl.color;
+            ctx.shadowBlur = 10; ctx.shadowColor = fl.color;
+            ctx.beginPath();
+            ctx.arc(fl.x, fl.y, fl.size, 0, Math.PI*2);
+            ctx.fill();
+            ctx.shadowBlur = 0; // শ্যাডো রিসেট
+        });
+
+        // ৫. চমৎকার হোয়াইট মিনিমালিস্ট লাক্সারি কার (White Sports Car)
+        this.drawCar(w, h);
     },
-    drawTargetCar(w, h) {
-        let ctx = this.ctx, screenX = w / 2, screenY = h - 140;
-        let carW = 205, carH = 85;
+    drawCar(w, h) {
+        let ctx = this.ctx, screenX = w / 2, screenY = h - 160;
+        let carW = 220, carH = 85;
 
-        // হালকা শ্যাডো
-        ctx.fillStyle = "rgba(0,0,0,0.12)";
-        ctx.fillRect(screenX - carW/1.9, screenY + carH - 15, carW*1.05, 15);
+        // কার শ্যাডো
+        ctx.fillStyle = "rgba(0,0,0,0.4)";
+        ctx.fillRect(screenX - carW/2, screenY + carH - 12, carW, 12);
 
-        // নিচের কালো ডিফ্যূজার/বাম্পার অংশ
-        ctx.fillStyle = "#202022";
+        // লোয়ার ব্ল্যাক বাম্পার/ডিফ্যুজার
+        ctx.fillStyle = "#0f172a";
+        ctx.fillRect(screenX - carW/2.1, screenY + carH - 25, carW/1.05, 15);
+
+        // মেইন বডি (Pure White Body)
+        ctx.fillStyle = "#f1f5f9";
         ctx.beginPath();
-        ctx.moveTo(screenX - carW/2.1, screenY + carH - 22);
-        ctx.lineTo(screenX + carW/2.1, screenY + carH - 22);
-        ctx.lineTo(screenX + carW/2.3, screenY + carH);
-        ctx.lineTo(screenX - carW/2.3, screenY + carH);
+        ctx.moveTo(screenX - carW/2, screenY + carH - 50);
+        ctx.lineTo(screenX - carW/2.1, screenY + carH - 25);
+        ctx.lineTo(screenX + carW/2.1, screenY + carH - 25);
+        ctx.lineTo(screenX + carW/2, screenY + carH - 50);
+        ctx.lineTo(screenX + carW/2.5, screenY);
+        ctx.lineTo(screenX - carW/2.5, screenY);
         ctx.closePath(); ctx.fill();
 
-        // প্রধান রিয়ার হোয়াইট বডি চ্যাসিস (White Sleek Body)
-        ctx.fillStyle = "#ececee";
+        // ছবির মতো স্লিক ব্যাক গ্লাস উইন্ডো
+        ctx.fillStyle = "#1e293b";
         ctx.beginPath();
-        ctx.moveTo(screenX - carW/2, screenY + carH - 52); // বাম কোণ
-        ctx.lineTo(screenX - carW/2.1, screenY + carH - 22);
-        ctx.lineTo(screenX + carW/2.1, screenY + carH - 22);
-        ctx.lineTo(screenX + carW/2, screenY + carH - 52); // ডান কোণ
-        ctx.lineTo(screenX + carW/2.4, screenY); // টপ ডান
-        ctx.lineTo(screenX - carW/2.4, screenY); // টপ বাম
+        ctx.moveTo(screenX - carW/3, screenY + 5);
+        ctx.lineTo(screenX - carW/2.7, screenY + carH - 55);
+        ctx.lineTo(screenX + carW/2.7, screenY + carH - 55);
+        ctx.lineTo(screenX + carW/3, screenY + 5);
         ctx.closePath(); ctx.fill();
 
-        // ছবির অবিকল স্লিম ডার্ক ব্যাক গ্লাস উইন্ডো (Rear Glass Panel)
-        ctx.fillStyle = "#424246";
-        ctx.beginPath();
-        ctx.moveTo(screenX - carW/2.9, screenY + 4);
-        ctx.lineTo(screenX - carW/2.6, screenY + carH - 55);
-        ctx.lineTo(screenX + carW/2.6, screenY + carH - 55);
-        ctx.lineTo(screenX + carW/2.9, screenY + 4);
-        ctx.closePath(); ctx.fill();
+        // স্লিম টেল লাইটস (Tail Lights)
+        ctx.fillStyle = "#3b0712"; // ডার্ক রেড স্লিম স্ট্রিপ
+        ctx.fillRect(screenX - carW/2.15, screenY + carH - 42, 35, 6);
+        ctx.fillRect(screenX + carW/2.15 - 35, screenY + carH - 42, 35, 6);
 
-        // ছবির মতো স্টাইলিশ হরাইজন্টাল টেল লাইটস (Slim Tail Lights)
-        ctx.fillStyle = "#3a1d1d"; // অফ-স্টেট রেড
-        ctx.fillRect(screenX - carW/2.15, screenY + carH - 45, 32, 7);
-        ctx.fillRect(screenX + carW/2.15 - 32, screenY + carH - 45, 32, 7);
-        
-        // টায়ারস (নিচের দুই কোণায় দৃশ্যমান কালো চাকা)
-        ctx.fillStyle = "#1e1e1e";
-        ctx.fillRect(screenX - carW/2.15, screenY + carH - 15, 24, 15);
-        ctx.fillRect(screenX + carW/2.15 - 24, screenY + carH - 15, 24, 15);
+        // চাকা (Rear Tires)
+        ctx.fillStyle = "#020617";
+        ctx.fillRect(screenX - carW/2.18, screenY + carH - 15, 22, 15);
+        ctx.fillRect(screenX + carW/2.18 - 22, screenY + carH - 15, 22, 15);
     }
 };
 
