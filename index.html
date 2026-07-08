@@ -173,7 +173,6 @@
 <div id="game-container">
     <canvas id="gameCanvas"></canvas>
 
-    <!-- HUD Overlay -->
     <div id="hud">
         <div id="hud-top-left" class="hud-panel">
             <div style="font-weight: 900; color: var(--primary);">STARRY MIDNIGHT DRIVE</div>
@@ -194,7 +193,6 @@
         </div>
     </div>
 
-    <!-- Mobile Controls Interface -->
     <div id="touch-controls">
         <div id="btn-left" class="touch-btn">◀</div>
         <div id="btn-right" class="touch-btn">▶</div>
@@ -202,25 +200,19 @@
         <div id="btn-brake" class="touch-btn">BRK</div>
     </div>
 
-    <!-- MAIN MENU -->
     <div id="menu-main" class="screen active">
         <div class="glass-panel" style="text-align: center; width: 400px;">
             <h1>APEX HORIZON</h1>
             <p style="font-size: 0.8rem; color: var(--primary); letter-spacing: 2px; margin-bottom: 30px;">STARRY NIGHT RENDER V2</p>
             <div style="display:flex; flex-direction:column; gap:10px;">
                 <button class="btn btn-primary" onclick="Game.start()">Start Midnight Cruise</button>
-                <button class="btn" onclick="alert('Controls: WASD / Arrow Keys \nMobile: Use Screen Buttons. Change input in settings if needed.')">Controls Guide</button>
+                <button class="btn" onclick="alert('Controls: WASD / Arrow Keys \nMobile: Use Screen Buttons.')">Controls Guide</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-/**
- * APEX HORIZON - DESIGNED FROM SPECIAL CUSTOM STARRY THEME
- * Custom procedural code recreating midnight milky way, side rivers, roads, and guard rails.
- */
-
 const Game = {
     canvas: null, ctx: null, running: false, lastTime: 0,
     segments: [], segmentLength: 200, trackLength: null, cameraDepth: null, cameraHeight: 900,
@@ -242,7 +234,6 @@ const Game = {
         this.cameraDepth = 1 / Math.tan((100 / 2) * Math.PI / 180);
     },
     generateEnvironmentData() {
-        // ১. তারামণ্ডল জেনারেট করা (চিত্রের মতো মিল্কিওয়ে ছায়া তৈরি করতে)
         this.stars = [];
         for(let i=0; i<250; i++) {
             this.stars.push({
@@ -253,13 +244,12 @@ const Game = {
             });
         }
         
-        // ২. নারকেল এবং তাল গাছের ডাটা জেনারেট করা
         this.treeAssets = [];
         for(let i=0; i<40; i++) {
             this.treeAssets.push({
                 type: Math.random() > 0.5 ? 'coconut' : 'palm',
                 side: Math.random() > 0.5 ? 1 : -1,
-                factor: 1.6 + Math.random() * 0.8 // রাস্তার ঠিক কতটা বাইরে থাকবে
+                factor: 1.6 + Math.random() * 0.8
             });
         }
     },
@@ -273,7 +263,6 @@ const Game = {
         window.addEventListener('keydown', (e) => handler(e, true));
         window.addEventListener('keyup', (e) => handler(e, false));
 
-        // মোবাইল ডিভাইস ডিটেকশন ও কন্ট্রোল সচল করা
         if('ontouchstart' in window) {
             document.getElementById('touch-controls').style.display = 'block';
             const setupTouch = (id, keyName) => {
@@ -303,7 +292,6 @@ const Game = {
         }
         this.trackLength = this.segments.length * this.segmentLength;
         
-        // ট্রাফিকের জন্য আননোন/অচেনা গাড়ি যুক্ত করা
         this.aiVehicles = [
             { position: 1200, trackX: -0.4, speed: 70, color: '#ffb703' },
             { position: 3200, trackX: 0.5, speed: 85, color: '#fb8500' },
@@ -350,18 +338,16 @@ const Game = {
 
         this.skyOffset += seg.curve * 0.04 * (this.speed / this.maxSpeed);
         
-        // ট্রাফিকের অচেনা গাড়িগুলোর পজিশন আপডেট এবং কলিশন (ধাক্কা) চেক
         this.aiVehicles.forEach(ai => {
             ai.position += ai.speed * 4 * dt;
             if(ai.position > this.trackLength) ai.position -= this.trackLength;
             
             if(Math.abs(ai.position - this.position) < 160 && Math.abs(ai.trackX - this.playerX) < 0.45) {
-                this.speed *= 0.5; // ধাক্কা লাগলে গতি অর্ধেক কমে যাবে
+                this.speed *= 0.5;
                 ai.speed += 20; 
             }
         });
 
-        // হালকা বৃষ্টি পড়ার মেকানিজম
         if(Math.random() < 0.6) {
             this.rainParticles.push({ x: Math.random()*this.canvas.width, y: 0, vy: 700, length: 15 });
         }
@@ -370,12 +356,11 @@ const Game = {
             if(p.y > this.canvas.height) this.rainParticles.splice(index, 1);
         });
 
-        // ফিনিশ লাইন লজিক
         if(this.position >= this.trackLength - 400) {
             this.running = false;
             alert("RACE ENDED! Midnight Cruise Complete.");
             document.getElementById('hud').style.display = 'none';
-            Menu.init();
+            document.getElementById('menu-main').classList.add('active');
         }
 
         document.getElementById('hud-speed').innerText = Math.floor(this.speed);
@@ -394,14 +379,12 @@ const Game = {
         let ctx = this.ctx;
         ctx.clearRect(0, 0, w, h);
 
-        // ১. ছবির মতো গভীর নীল রাতের আকাশ গ্রাডিয়েন্ট
         let skyGrad = ctx.createLinearGradient(0, 0, 0, h/1.6);
         skyGrad.addColorStop(0, "#020617");
         skyGrad.addColorStop(0.5, "#0b1528");
         skyGrad.addColorStop(1, "#1e3a5f");
         ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, w, h/1.6);
 
-        // ২. আকাশে ঝকঝকে তারা (Stars Animation) ড্রয়িং
         this.stars.forEach(star => {
             let relativeX = (star.x - this.skyOffset * 150) % w;
             if (relativeX < 0) relativeX += w;
@@ -409,13 +392,11 @@ const Game = {
             ctx.fillRect(relativeX, star.y, star.size, star.size);
         });
 
-        // ৩. মিল্কিওয়ে গ্যালাক্সির মতো উজ্জ্বল আলোকছটা (ছবিটির মতো এফেক্ট)
         let glowGrad = ctx.createRadialGradient(w/2 - (this.skyOffset*100)%w, h/4, 10, w/2 - (this.skyOffset*100)%w, h/4, 200);
         glowGrad.addColorStop(0, "rgba(0, 191, 255, 0.15)");
         glowGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
         ctx.fillStyle = glowGrad; ctx.fillRect(0, 0, w, h/1.6);
 
-        // ৪. রাস্তা, নদী এবং কিনারের অবয়ব রেন্ডারিং লুপ
         let baseSegment = this.findSegment(this.position);
         let basePercent = (this.position % this.segmentLength) / this.segmentLength;
         let currentCamZ = this.position - (basePercent * this.segmentLength);
@@ -435,10 +416,8 @@ const Game = {
             if((segment.p1.world.z - currentCamZ <= this.cameraDepth) || (segment.p2.screen.y >= maxy)) continue;
 
             let p1 = segment.p1.screen, p2 = segment.p2.screen;
-            let r1 = p1.w * 1.1, r2 = p2.w * 1.1; // রাস্তার চওড়া রেশিও
-            let riverW1 = p1.w * 2.5, riverW2 = p2.w * 2.5; // নদীর চওড়া রেশিও
+            let r1 = p1.w * 1.1, r2 = p2.w * 1.1;
 
-            // রাস্তার পাশে নীল নদী অঙ্কন
             ctx.fillStyle = "#005f73"; 
             ctx.beginPath();
             ctx.moveTo(0, p1.y); ctx.lineTo(0, p2.y);
@@ -451,19 +430,16 @@ const Game = {
             ctx.lineTo(p2.x + r2, p2.y); ctx.lineTo(p1.x + r1, p1.y);
             ctx.closePath(); ctx.fill();
 
-            // মূল পিচ ঢালা মেইন রোড (Middle Road)
             ctx.fillStyle = segment.color.road;
             ctx.beginPath(); ctx.moveTo(p1.x - r1, p1.y); ctx.lineTo(p2.x - r2, p2.y); ctx.lineTo(p2.x + r2, p2.y); ctx.lineTo(p1.x + r1, p1.y); ctx.closePath(); ctx.fill();
 
-            // রাস্তার সেন্ট্রাল বা মাঝখানের রোড লাইন (White Strip Lines)
             if(segment.color.line) {
                 ctx.fillStyle = segment.color.line;
                 ctx.fillRect(p1.x - p1.w*0.02, p2.y, p1.w*0.04, p1.y - p2.y);
             }
 
-            // এক্সিডেন্ট প্রোটেকশন সেফটি বেরিকেট (Guard Rails/Barriers)
             let drawBarrier = (side) => {
-                ctx.fillStyle = (segment.index % 2 === 0) ? "#e63946" : "#ffffff"; // লাল-সাদা কম্বিনেশন
+                ctx.fillStyle = (segment.index % 2 === 0) ? "#e63946" : "#ffffff";
                 let bx1 = p1.x + (side * r1), bx2 = p2.x + (side * r2);
                 let bw1 = p1.w * 0.03, bw2 = p2.w * 0.03;
                 ctx.beginPath();
@@ -471,10 +447,9 @@ const Game = {
                 ctx.lineTo(bx2 + bw2, p2.y); ctx.lineTo(bx1 + bw1, p1.y);
                 ctx.closePath(); ctx.fill();
             };
-            drawBarrier(-1); // বামের বেরিকেট
-            drawBarrier(1);  // ডানের বেরিকেট
+            drawBarrier(-1);
+            drawBarrier(1);
 
-            // রাস্তার দুই কিনারে গাছপালা (নারকেল গাছ ও তাল গাছ এফেক্ট)
             if(segment.index % 6 === 0) {
                 let asset = this.treeAssets[segment.index % this.treeAssets.length];
                 let treeX = p1.x + (asset.side * r1 * asset.factor);
@@ -482,18 +457,14 @@ const Game = {
 
                 if(scale > 1) {
                     ctx.save();
-                    // গাছের গুড়ি/কাণ্ড
                     ctx.fillStyle = "#3d2314";
                     ctx.fillRect(treeX - scale*0.05, p1.y - scale * 1.5, scale * 0.1, scale * 1.5);
                     
-                    // পাতার অংশ (নারকেল/তাল পাতার অবয়ব)
                     ctx.fillStyle = "#0d2b1d";
                     ctx.beginPath();
                     if(asset.type === 'coconut') {
-                        // ছড়ানো নারকেল পাতা
                         ctx.arc(treeX, p1.y - scale*1.5, scale*0.6, 0, Math.PI*2);
                     } else {
-                        // গোল ফ্যান-টাইপ তাল পাতা
                         ctx.moveTo(treeX, p1.y - scale*1.5);
                         ctx.arc(treeX, p1.y - scale*1.5, scale*0.5, Math.PI, 0);
                     }
@@ -505,7 +476,6 @@ const Game = {
             maxy = p2.y;
         }
 
-        // ৫. ট্রাফিকের আননোন/অচেনা গাড়ি ড্র করা
         this.aiVehicles.forEach(ai => {
             if(ai.position > this.position && ai.position < this.position + 14000) {
                 let aiSeg = this.findSegment(ai.position);
@@ -516,7 +486,6 @@ const Game = {
                 if(carW > 2) {
                     ctx.fillStyle = ai.color;
                     ctx.fillRect(calcP.screen.x - carW/2, calcP.screen.y - carW/3, carW, carW/3);
-                    // টেইল লাইট
                     ctx.fillStyle = "#ff0000";
                     ctx.fillRect(calcP.screen.x - carW/2, calcP.screen.y - carW/3, carW*0.15, carW*0.08);
                     ctx.fillRect(calcP.screen.x + carW/2 - carW*0.15, calcP.screen.y - carW/3, carW*0.15, carW*0.08);
@@ -524,10 +493,8 @@ const Game = {
             }
         });
 
-        // ৬. প্লেয়ারের রেসিং কার রেন্ডার করা
         this.drawPlayerCar(w, h);
 
-        // ৭. রাতের হালকা রেইন ড্রপ ফলিং এফেক্টস
         ctx.strokeStyle = "rgba(135, 206, 235, 0.25)";
         ctx.lineWidth = 1;
         this.rainParticles.forEach(p => {
@@ -538,14 +505,12 @@ const Game = {
         let ctx = this.ctx, screenX = w / 2, screenY = h - 80;
         let carW = 170, carH = 70;
 
-        if(this.speed > 0) screenY += (Math.random() * 2 - 1); // রানিং ভাইব্রেশন
+        if(this.speed > 0) screenY += (Math.random() * 2 - 1);
 
-        // নিয়ন নিচতলার লাইটিং লাস্টার
         ctx.fillStyle = "rgba(0, 191, 255, 0.4)";
         ctx.fillRect(screenX - carW/2.5, screenY, carW/1.25, 10);
 
-        // মেইন বডি স্পোর্টস কার কার্ভ
-        ctx.fillStyle = "#e63946"; // স্পোর্টি রেড বডি চ্যাসিস
+        ctx.fillStyle = "#e63946";
         ctx.beginPath();
         ctx.moveTo(screenX - carW/2, screenY);
         ctx.lineTo(screenX - carW/2.4, screenY - carH/1.8);
@@ -553,7 +518,6 @@ const Game = {
         ctx.lineTo(screenX + carW/2, screenY);
         ctx.closePath(); ctx.fill();
 
-        // ডার্ক স্পোর্টস কেবিন উইন্ডো কাচ
         ctx.fillStyle = "#050b14";
         ctx.beginPath();
         ctx.moveTo(screenX - carW/3.6, screenY - carH/1.8);
@@ -562,7 +526,6 @@ const Game = {
         ctx.lineTo(screenX + carW/3.6, screenY - carH/1.8);
         ctx.closePath(); ctx.fill();
 
-        // রিয়ার রেস ব্যাক লাইট ও এক্সহস্ট গ্লো
         ctx.fillStyle = "#ff0055"; 
         ctx.fillRect(screenX - carW/2.3, screenY - carH/2, 18, 5);
         ctx.fillRect(screenX + carW/2.3 - 18, screenY - carH/2, 18, 5);
