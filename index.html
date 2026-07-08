@@ -20,7 +20,7 @@
             position: relative;
         }
 
-        /* ─── NAVIGATION BAR (CLEAN & MINIMAL) ─── */
+        /* ─── NAVIGATION BAR ─── */
         header {
             position: fixed;
             top: 0;
@@ -80,6 +80,22 @@
             color: white;
             z-index: 50;
             max-width: 550px;
+            user-select: none;
+        }
+
+        /* ─── WORD EXPLOSION / EFFECT STYLE ─── */
+        .interactive-text {
+            display: inline-block;
+            margin-right: 8px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .interactive-text span {
+            display: inline-block;
+            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.5s ease;
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
         }
 
         .hero-section h1 {
@@ -87,6 +103,10 @@
             font-weight: 800;
             line-height: 1.2;
             margin-bottom: 15px;
+        }
+
+        /* Gradient for H1 Words */
+        .hero-section h1 .interactive-text {
             background: linear-gradient(to right, #ffffff, #7bf1ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -111,7 +131,6 @@
             z-index: 1;
         }
 
-        /* Twinkling Stars */
         @keyframes twinkle {
             0%, 100% { opacity: 0.2; }
             50% { opacity: 1; filter: drop-shadow(0 0 4px #fff); }
@@ -124,7 +143,6 @@
             z-index: 2;
         }
 
-        /* Shooting Stars */
         @keyframes shoot {
             0% { transform: translate(0, 0) rotate(-35deg) scale(0); opacity: 0; }
             5% { opacity: 1; transform: translate(-10px, 7px) rotate(-35deg) scale(1); }
@@ -158,7 +176,6 @@
             transform-origin: bottom center;
         }
 
-        /* Glowing Fireflies (Like Pinterest Image) */
         @keyframes float-glow {
             0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0.2; }
             50% { opacity: 1; transform: translateY(-40px) translateX(15px) scale(1.2); }
@@ -197,7 +214,7 @@
 </head>
 <body>
 
-    <!-- Header Navigation (Only Projects Left) -->
+    <!-- Header Navigation -->
     <header>
         <a href="#" class="logo">APEX HORIZON</a>
         <nav>
@@ -209,8 +226,8 @@
 
     <!-- Hero Content -->
     <div class="hero-section">
-        <h1>Welcome to a Mystical World</h1>
-        <p>Explore a bioluminescent atmosphere where nature meets digital art. Click on Projects to discover my tools and applications.</p>
+        <h1 id="mystical-title">Welcome to a Mystical World</h1>
+        <p id="mystical-desc">Explore a bioluminescent atmosphere where nature meets digital art. Click on Projects to discover my tools and applications.</p>
     </div>
 
     <!-- Canvas / Background Fields -->
@@ -218,7 +235,7 @@
     <div id="star-field"></div>
     <div class="field" id="grass-field"></div>
 
-    <!-- Glowing Blue Flower (SVG matching the aesthetic) -->
+    <!-- Glowing Blue Flower -->
     <svg class="main-flower" viewBox="0 0 100 100">
         <path d="M50,100 Q46,75 50,50" stroke="#052c24" stroke-width="4" fill="none" />
         <g transform="translate(50,50)">
@@ -236,6 +253,57 @@
     </svg>
 
     <script>
+        // ─── TEXT EXPLOSION SCRIPT ───
+        function modernTextSplitter(elementId) {
+            const target = document.getElementById(elementId);
+            const textHTML = target.innerText;
+            const words = textHTML.split(" ");
+            target.innerHTML = ""; // Clear original text
+
+            words.forEach(word => {
+                const wordSpan = document.createElement("span");
+                wordSpan.classList.add("interactive-text");
+                
+                // Break each word into letters
+                wordSpan.innerHTML = word.split("").map(letter => `<span>${letter}</span>`).join("");
+                target.appendChild(wordSpan);
+
+                // Add Event Listeners for Mouse Hover & Touch Tap
+                const triggerExplosion = () => {
+                    const letters = wordSpan.querySelectorAll("span");
+                    letters.forEach(letter => {
+                        // Random values for blast distance across the whole screen
+                        const randomX = (Math.random() - 0.5) * window.innerWidth * 0.8;
+                        const randomY = (Math.random() - 0.5) * window.innerHeight * 0.8;
+                        const randomRotate = (Math.random() - 0.5) * 720;
+
+                        letter.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg) scale(0.5)`;
+                        letter.style.opacity = "0.3";
+                    });
+
+                    // Automatically return back after 3 seconds
+                    setTimeout(() => {
+                        letters.forEach(letter => {
+                            letter.style.transform = "translate(0, 0) rotate(0deg) scale(1)";
+                            letter.style.opacity = "1";
+                        });
+                    }, 3000);
+                };
+
+                wordSpan.addEventListener("mouseenter", triggerExplosion);
+                wordSpan.addEventListener("touchstart", (e) => {
+                    e.preventDefault(); // Prevents double firing on mobile
+                    triggerExplosion();
+                });
+            });
+        }
+
+        // Apply effect to title and paragraph
+        modernTextSplitter("mystical-title");
+        modernTextSplitter("mystical-desc");
+
+
+        // ─── ORIGINAL BACKGROUND ANIMATIONS ───
         // Generating Twinkling Stars
         const starField = document.getElementById('star-field');
         for (let i = 0; i < 90; i++) {
@@ -276,7 +344,7 @@
             grassField.appendChild(grass);
         }
 
-        // Continuous Glowing Fireflies (Pinterest Style)
+        // Continuous Glowing Fireflies
         function createFirefly() {
             const firefly = document.createElement('div');
             firefly.classList.add('firefly');
@@ -296,9 +364,8 @@
             }, duration * 1000);
         }
 
-        // Spawn fireflies constantly
         setInterval(createFirefly, 300);
-        for(let i=0; i<20; i++) { createFirefly(); } // Initial batch
+        for(let i=0; i<20; i++) { createFirefly(); }
     </script>
 </body>
 </html>
