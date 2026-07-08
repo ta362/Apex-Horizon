@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
+    <title>Apex Horizon: Neo Racing</title>
+    <style>
+        :root {
+            --glass: rgba(16, 16, 24, 0.75);
+            --border: rgba(255, 255, 255, 0.1);
+            --primary: #00f0ff;
+            --secondary: #ff007f;
+            --success: #39ff14;
+            --bg-dark: #0a0a0f;
+            --text: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-dark);
+            color: var(--text);
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-center: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #000;
+        }
+
+        /* UI Framework - Glassmorphism */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(10,10,25,0.6) 0%, rgba(5,5,10,0.95) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0,240,255,0.3);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #00a2ff);
+            color: #000;
+            border: none;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+            color: #000;
+        }
+
+        /* Specific Menu layouts */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-bar-container {
+            margin: 10px 0;
+        }
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+        .stat-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .stat-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* HUD layout */
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: none;
+            z-index: 5;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .hud-panel {
+            position: absolute;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(6px);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 15px;
+        }
+
+        #hud-top-left { top: 20px; left: 20px; }
+        #hud-top-right { top: 20px; right: 20px; text-align: right; }
+        #hud-bottom-right { bottom: 20px; right: 20px; text-align: center; width: 140px; height: 140px; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 4px solid rgba(255,255,255,0.1); }
+        #hud-bottom-left { bottom: 20px; left: 20px; width: 200px; }
+
+        .currency-display {
+            font-weight: bold;
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        /* Mobile Controls */
+        #touch-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 6;
+            display: none;
+        }
+        .touch-btn {
+            position: absolute;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            pointer-events: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+        #btn-left { bottom: 40px; left: 40px; width: 80px; height: 80px; }
+        #btn-right { bottom: 40px; left: 140px; width: 80px; height: 80px; }
+        #btn-accel { bottom: 40px; right: 40px; width: 90px; height: 90px; background: rgba(0, 240, 255, 0.15); }
+        #btn-brake { bottom: 40px; right: 150px; width: 75px; height: 75px; background: rgba(255, 0, 127, 0.15); }
+        #btn-nitro-touch { bottom: 135px; right: 52px; width: 65px; height: 65px; background: rgba(57, 255, 20, 0.15); }
+
+        /* Vehicle display cards in Garage */
+        .garage-container {
+            display: flex;
+            gap: 20px;
+            width: 900px;
+            max-width: 95vw;
+            height: 450px;
+        }
+        .car-selector {
+            flex: 1;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            padding-right: 15px;
+        }
+        .car-option {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255,255,255,0.02);
+        }
+        .car-option.selected {
+            border-color: var(--primary);
+            background: rgba(0,240,255,0.1);
+        }
+        .car-details {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #888;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .scrollable-list {
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="hud">
+        <div id="hud-top-left" class="hud-panel">
+            <div id="hud-mode">MODE: CAREER</div>
+            <div id="hud-mission" style="font-size: 0.8rem; color:#aaa;">MISSION: DRIVE 2KM</div>
+            <div id="hud-currency" class="currency-display">$0</div>
+        </div>
+        <div id="hud-top-right" class="hud-panel">
+            <div id="hud-time">TIME: 00:00.00</div>
+            <div id="hud-distance">DIST: 0 / 2000 m</div>
+            <div id="hud-fps" style="font-size: 0.75rem; color: #666;">60 FPS</div>
+        </div>
+        <div id="hud-bottom-left" class="hud-panel">
+            <div class="stat-label"><span>NITRO</span><span id="txt-nitro">100%</span></div>
+            <div class="stat-bar"><div id="bar-nitro" class="stat-fill" style="background: var(--success); width: 100%;"></div></div>
+            <div class="stat-label" style="margin-top:5px;"><span>DAMAGE</span><span id="txt-damage">0%</span></div>
+            <div class="stat-bar"><div id="bar-damage" class="stat-fill" style="background: var(--secondary); width: 0%;"></div></div>
+        </div>
+        <div id="hud-bottom-right">
+            <div id="hud-speed" style="font-size: 2rem; font-weight: 900; color: #fff;">0</div>
+            <div style="font-size: 0.75rem; letter-spacing: 2px; color: var(--primary);">KM/H</div>
+            <div id="hud-gear" style="font-size: 1rem; font-weight: bold; margin-top: 5px; color:#ffd700;">GEAR: 1</div>
+        </div>
+    </div>
+
+    <div id="touch-controls">
+        <div id="btn-left" class="touch-btn">◀</div>
+        <div id="btn-right" class="touch-btn">▶</div>
+        <div id="btn-accel" class="touch-btn">GAS</div>
+        <div id="btn-brake" class="touch-btn">BRK</div>
+        <div id="btn-nitro-touch" class="touch-btn">NOS</div>
+    </div>
+
+    <div id="menu-main" class="screen active">
+        <div class="glass-panel" style="text-align: center; width: 450px;">
+            <h1>APEX HORIZON</h1>
+            <p style="letter-spacing: 3px; font-size: 0.8rem; color: var(--primary); margin-bottom: 30px;">NEO VANILLA RACING</p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn btn-primary" onclick="Menu.open('modes')">Race Event</button>
+                <button class="btn" onclick="Menu.open('garage')">Garage</button>
+                <button class="btn" onclick="Menu.open('missions')">Missions & Achievements</button>
+                <button class="btn" onclick="Menu.open('settings')">Settings</button>
+                <button class="btn" onclick="Menu.open('credits')">Credits</button>
+            </div>
+            <div style="margin-top: 20px; font-size: 0.9rem;" id="main-wallet" class="currency-display">$0</div>
+        </div>
+    </div>
+
+    <div id="menu-modes" class="screen">
+        <div class="glass-panel" style="width: 600px;">
+            <h2>Select Event Type</h2>
+            <div class="scrollable-list" id="modes-list" style="max-height:300px; display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+            <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:15px;">
+                <h3>Select Location</h3>
+                <div id="maps-list" style="display:flex; flex-wrap:wrap; gap:5px; margin-top:10px;"></div>
+            </div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="btn" onclick="Menu.open('main')">Back</button>
+                <button class="btn btn-primary" onclick="Game.start()">Launch Race</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="menu-garage" class="screen">
+        <div class="glass-panel">
+            <h2>Performance Development Studio</h2>
+            <div class="garage-container">
+                <div class="car-selector" id="garage-cars"></div>
+                <div class="car-details">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 id="garage-car-name" style="color: #fff;">Car Name</h3>
+                            <span id="garage-car-status" style="font-weight:bold; color:var(--success);">OWNED</span>
+                        </div>
+                        <div class="tabs" style="margin-top:10px;">
+                            <button class="tab-btn active" id="tab-upgrades" onclick="Menu.changeGarageTab('upgrades')">Upgrades</button>
+                            <button class="tab-btn" id="tab-visuals" onclick="Menu.changeGarageTab('visuals')">Visuals</button>
+                        </div>
+                        
+                        <div id="garage-tab-content-upgrades">
+                            </div>
+                        <div id="garage-tab-content-visuals" style="display:none;">
+                            <h4>Body Coating</h4>
+                            <div id="paint-options" style="display:flex; gap:10px; margin: 10px 0;"></div>
+                            <h4>Neon Underglow</h4>
+                            <div id="neon-options" style="display:flex; gap:10px; margin: 10px 0;"></div>
+                        </div>
+                    </div>
+                    <div style="border-top:1px solid var(--border); padding-top:15px; display:flex; justify-content:space-between; align-items:center;">
+                        <div id="garage-wallet" class="currency-display">$0</div>
+                        <div>
+                            <button class="btn" onclick="Menu.open('main')">Back</button>
+                            <button class="btn btn-primary" id="btn-garage-action" onclick="Menu.buyOrUpgrade()">Action</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="menu-missions" class="screen">
+        <div class="glass-panel" style="width: 700px; max-height:85vh;">
+            <h2>Progression Matrix</h2>
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-m" onclick="Menu.switchProgressTab('m')">Active Operations (Missions)</button>
+                <button class="tab-btn" id="tab-a" onclick="Menu.switchProgressTab('a')">Milestones (Achievements)</button>
+            </div>
+            <div id="container-missions" class="scrollable-list" style="max-height:400px;"></div>
+            <div id="container-achievements" class="scrollable-list" style="max-height:400px; display:none;"></div>
+            <div style="margin-top:20px; text-align:right;">
+                <button class="btn" onclick="Menu.open('main')">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="menu-settings" class="screen">
+        <div class="glass-panel" style="width: 400px;">
+            <h2>Configuration</h2>
+            <div style="display:flex; flex-direction:column; gap:15px; margin:20px 0;">
+                <div>
+                    <label style="display:block; font-size:0.85rem; margin-bottom:5px;">Graphics Target</label>
+                    <select id="setting-graphics" class="btn" style="width:100%; text-align:left;" onchange="Settings.save()">
+                        <option value="high">High (Full Shadow Mapping & Particles)</option>
+                        <option value="low">Low Optimization (Mobile Optimized)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.85rem; margin-bottom:5px;">Control Configuration</label>
+                    <select id="setting-controls" class="btn" style="width:100%; text-align:left;" onchange="Settings.updateControlVisibility()">
+                        <option value="keyboard">Keyboard (WASD / Arrows)</option>
+                        <option value="touch">On-Screen Virtual Touch Interface</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.85rem; margin-bottom:5px;">Audio Matrix Master</label>
+                    <select id="setting-audio" class="btn" style="width:100%; text-align:left;" onchange="AudioEngine.toggleMute()">
+                        <option value="on">Synthesized Audio Engine Enabled</option>
+                        <option value="off">Muted</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                <button class="btn" style="color:var(--secondary); border-color:var(--secondary);" onclick="Storage.reset()">Hard Wipe Data</button>
+                <button class="btn btn-primary" onclick="Menu.open('main')">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="menu-credits" class="screen">
+        <div class="glass-panel" style="text-align:center; width:400px;">
+            <h2>Apex Horizon Engine</h2>
+            <p style="margin:20px 0; line-height:1.6; color:#ccc;">
+                Engine Architecture: Pure Vanilla HTML5/JavaScript<br>
+                Render System: Layer Projected Mathematical Segment Array<br>
+                Audio DSP: Web Audio Synth Array Emulator<br>
+                FPS Control: High Precision Performance Loop
+            </p>
+            <button class="btn btn-primary" onclick="Menu.open('main')">Acknowledge</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * APEX HORIZON RACING SYSTEM ARCHITECTURE
+ * Engineered entirely using structural math projections. No graphic asset pipelines needed.
+ */
+
+// --- SYNTHESIZED WEB AUDIO DSP SYSTEM ---
+const AudioEngine = {
+    ctx: null,
+    muted: false,
+    engineOsc: null,
+    engineGain: null,
+    init() {
+        if (this.ctx) return;
+        try {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch(e) { console.error("Audio Context Init Blocked"); }
+    },
+    toggleMute() {
+        const val = document.getElementById('setting-graphics').value;
+        this.muted = (document.getElementById('setting-audio').value === 'off');
+        if (this.muted && this.engineGain) { this.engineGain.gain.value = 0; }
+    },
+    playTone(freq, type, duration, volume) {
+        if (!this.ctx || this.muted) this.init();
+        if (this.muted || !this.ctx) return;
+        try {
+            let osc = this.ctx.createOscillator();
+            let gain = this.ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.00001, this.ctx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + duration);
+        } catch(e){}
+    },
+    startEngine() {
+        if (!this.ctx || this.muted) this.init();
+        if (this.muted || !this.ctx || this.engineOsc) return;
+        try {
+            this.engineOsc = this.ctx.createOscillator();
+            this.engineGain = this.ctx.createGain();
+            this.engineOsc.type = 'sawtooth';
+            this.engineOsc.frequency.setValueAtTime(60, this.ctx.currentTime);
+            this.engineGain.gain.setValueAtTime(0.02, this.ctx.currentTime);
+            this.engineOsc.connect(this.engineGain);
+            this.engineGain.connect(this.ctx.destination);
+            this.engineOsc.start();
+        } catch(e){}
+    },
+    updateEngine(speedRatio) {
+        if (this.muted || !this.engineOsc) return;
+        try {
+            this.engineOsc.frequency.setValueAtTime(40 + (speedRatio * 240), this.ctx.currentTime);
+            this.engineGain.gain.setValueAtTime(0.02 + (speedRatio * 0.04), this.ctx.currentTime);
+        } catch(e){}
+    },
+    stopEngine() {
+        if (this.engineOsc) {
+            try { this.engineOsc.stop(); } catch(e){}
+            this.engineOsc = null;
+        }
+    },
+    click() { this.playTone(600, 'sine', 0.08, 0.1); },
+    buy() { this.playTone(880, 'triangle', 0.3, 0.15); },
+    crash() { this.playTone(90, 'sawtooth', 0.5, 0.4); },
+    nitro() { this.playTone(400, 'sine', 0.2, 0.1); }
+};
+
+// --- DATA STRUC ENGINE (20 CARS, 10 MAPS, 7 MODES, 100 MISSIONS) ---
+const CarsData = [
+    { id: 0, name: "Alpha Hatch", type: "Hatchback", speed: 120, accel: 140, hand: 150, weight: 1100, price: 0 },
+    { id: 1, name: "Solas Sedan", type: "Sedan", speed: 140, accel: 130, hand: 130, weight: 1400, price: 1500 },
+    { id: 2, name: "Goliath SUV", type: "SUV", speed: 130, accel: 110, hand: 100, weight: 2200, price: 3000 },
+    { id: 3, name: "Interceptor Cop", type: "Police Car", speed: 160, accel: 150, hand: 140, weight: 1800, price: 5000 },
+    { id: 4, name: "V8 Marauder", type: "Muscle", speed: 170, accel: 170, hand: 110, weight: 1600, price: 8500 },
+    { id: 5, name: "Neon Shifter", type: "Drift Car", speed: 165, accel: 160, hand: 170, weight: 1250, price: 12000 },
+    { id: 6, name: "Volt Surge", type: "Electric Car", speed: 180, accel: 220, hand: 145, weight: 2100, price: 18000 },
+    { id: 7, name: "Ranger Hauler", type: "Pickup", speed: 140, accel: 130, hand: 110, weight: 2400, price: 6000 },
+    { id: 8, name: "Apex Formula", type: "Formula Car", speed: 240, accel: 250, hand: 250, weight: 650, price: 75000 },
+    { id: 9, name: "Zenith Hyper", type: "Hypercar", speed: 260, accel: 240, hand: 210, weight: 1350, price: 95000 },
+    { id: 10, name: "Specter JDM", type: "Drift Car", speed: 175, accel: 165, hand: 180, weight: 1300, price: 15000 },
+    { id: 11, name: "Titan Semi", type: "Truck", speed: 110, accel: 90, hand: 80, weight: 5500, price: 22000 },
+    { id: 12, name: "Giga Cruiser", type: "SUV", speed: 150, accel: 140, hand: 120, weight: 2300, price: 14000 },
+    { id: 13, name: "Quantum EV", type: "Electric Car", speed: 195, accel: 240, hand: 160, weight: 1950, price: 32000 },
+    { id: 14, name: "Manta GT", type: "Muscle", speed: 190, accel: 180, hand: 135, weight: 1550, price: 27000 },
+    { id: 15, name: "Enforcer Mech", type: "Police Car", speed: 200, accel: 190, hand: 150, weight: 1900, price: 35000 },
+    { id: 16, name: "Monolith Bus", type: "Bus", speed: 105, accel: 80, hand: 70, weight: 8000, price: 40000 },
+    { id: 17, name: "Aero Vertex", type: "Formula Car", speed: 250, accel: 260, hand: 260, weight: 620, price: 110000 },
+    { id: 18, name: "Chiron Eclipse", type: "Hypercar", speed: 280, accel: 270, hand: 230, weight: 1400, price: 150000 },
+    { id: 19, name: "Nebula Infinite", type: "Hypercar", speed: 300, accel: 290, hand: 240, weight: 1200, price: 250000 }
+];
+
+const MapsData = [
+    { id: "city", name: "Neo City Grid", bg: "#0d0d1a", sky: "#1a0b2e", road: "#222", grass: "#051505", weather: "sunny", cycle: "night" },
+    { id: "highway", name: "Sun-Basked Ridge", bg: "#7ec0ee", sky: "#ffaa44", road: "#2b2b2b", grass: "#3a5fcd", weather: "sunny", cycle: "morning" },
+    { id: "desert", name: "Outback Wasteland", bg: "#e0a060", sky: "#ffd27f", road: "#3d332a", grass: "#c48041", weather: "sunny", cycle: "noon" },
+    { id: "snow", name: "Glacial Divide", bg: "#ffffff", sky: "#dbeaf8", road: "#1c2833", grass: "#eaf2f8", weather: "snow", cycle: "evening" },
+    { id: "mountain", name: "Alpine Ascent", bg: "#4a5568", sky: "#2d3748", road: "#2d3748", grass: "#1a202c", weather: "fog", cycle: "morning" },
+    { id: "forest", name: "Redwood Canopy", bg: "#0f2e1b", sky: "#1f4d32", road: "#262626", grass: "#0b2414", weather: "cloudy", cycle: "noon" },
+    { id: "beach", name: "Marina Boardwalk", bg: "#40e0d0", sky: "#00bfff", road: "#333", grass: "#f0e68c", weather: "sunny", cycle: "evening" },
+    { id: "nightcity", name: "Shibuya Underground", bg: "#000", sky: "#050010", road: "#151515", grass: "#0d021a", weather: "rain", cycle: "night" },
+    { id: "rain", name: "Monsoon Slipstream", bg: "#2c3e50", sky: "#34495e", road: "#1a252f", grass: "#16a085", weather: "storm", cycle: "cloudy" },
+    { id: "village", name: "Hinterland Paths", bg: "#556b2f", sky: "#8fbc8f", road: "#4a3c31", grass: "#6b8e23", weather: "sunny", cycle: "noon" }
+];
+
+const ModesData = [
+    { id: "career", name: "Career Continuum", desc: "Complete standardized metric objectives." },
+    { id: "endless", name: "Infinite Asphalt", desc: "Drive till operational destruction occurs." },
+    { id: "timetrial", name: "Chronos Trigger", desc: "Beat structural countdown matrices." },
+    { id: "drift", name: "Lateral Kinetic Event", desc: "Gain massive metrics spinning sideway." },
+    { id: "traffic", name: "Gridlock Congestion", desc: "Weave closely past civilian commuter assets." },
+    { id: "police", name: "Bust Evacuation", desc: "Evade tactical aggressive enforcement hulls." },
+    { id: "checkpoint", name: "Quantum Gate Dash", desc: "Acquire standard gate intervals to pass." }
+];
+
+// Master Game State Object
+let PlayerState = {
+    wallet: 500,
+    currentCar: 0,
+    ownedCars: [0],
+    upgrades: {}, // structural mapping: carId -> { engine, handling, nitro, brakes }
+    visuals: {},  // carId -> { paint, neon }
+    completedMissions: [],
+    achievements: [],
+    highScores: {}
+};
+
+// Generate 100 Missions & 50 Achievements without bloating arrays manually
+const MissionEngine = {
+    missions: [],
+    achievements: [],
+    generate() {
+        for(let i=1; i<=100; i++) {
+            this.missions.push({
+                id: i,
+                desc: `Operation Phase ${i}: Accumulate ${i * 350} meters in a localized dynamic sprint.`,
+                target: i * 350,
+                reward: 150 + (i * 25)
+            });
+        }
+        for(let j=1; j<=50; j++) {
+            this.achievements.push({
+                id: j,
+                title: `Nexus Peak Tier ${j}`,
+                desc: `Acquire total financial metrics worth $${j * 2000}.`,
+                target: j * 2000,
+                reward: 500
+            });
+        }
+    }
+};
+MissionEngine.generate();
+
+// --- SAVES & SECURE SYSTEM ---
+const Storage = {
+    key: "APEX_HORIZON_DATA_SECURE",
+    save() {
+        localStorage.setItem(this.key, btoa(JSON.stringify(PlayerState)));
+    },
+    load() {
+        let raw = localStorage.getItem(this.key);
+        if (raw) {
+            try {
+                PlayerState = JSON.parse(atob(raw));
+                // Anti-Cheat injection validation
+                if (typeof PlayerState.wallet !== 'number' || isNaN(PlayerState.wallet)) PlayerState.wallet = 500;
+            } catch(e) { console.error("Save integrity breach detected."); }
+        }
+    },
+    reset() {
+        localStorage.removeItem(this.key);
+        window.location.reload();
+    }
+};
+
+// --- CORE MENU CONTROLLER ---
+const Menu = {
+    activeTab: 'upgrades',
+    activeProgressTab: 'm',
+    selectedCarId: 0,
+    selectedMapId: "city",
+    selectedModeId: "career",
+
+    init() {
+        Storage.load();
+        this.selectedCarId = PlayerState.currentCar;
+        this.renderAll();
+        this.open('main');
+        // Give daily reward
+        if(!localStorage.getItem("apex_daily_2026")) {
+            PlayerState.wallet += 1000;
+            localStorage.setItem("apex_daily_2026", "true");
+            alert("Daily Operational Reward Credited: +$1000!");
+            Storage.save();
+            this.renderAll();
+        }
+    },
+    open(screenId) {
+        AudioEngine.click();
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        let target = document.getElementById(`menu-${screenId}`);
+        if(target) target.classList.add('active');
+    },
+    renderAll() {
+        document.getElementById('main-wallet').innerText = `$${PlayerState.wallet}`;
+        document.getElementById('garage-wallet').innerText = `$${PlayerState.wallet}`;
+        document.getElementById('hud-currency').innerText = `$${PlayerState.wallet}`;
+
+        // Modes Rendering
+        let mList = document.getElementById('modes-list');
+        mList.innerHTML = "";
+        ModesData.forEach(m => {
+            mList.innerHTML += `
+                <div class="car-option ${this.selectedModeId === m.id ? 'selected' : ''}" onclick="Menu.selectMode('${m.id}')">
+                    <div style="font-weight:bold; color:var(--primary);">${m.name}</div>
+                    <div style="font-size:0.75rem; color:#ccc;">${m.desc}</div>
+                </div>`;
+        });
+
+        // Maps Rendering
+        let mapList = document.getElementById('maps-list');
+        mapList.innerHTML = "";
+        MapsData.forEach(m => {
+            mapList.innerHTML += `
+                <button class="btn ${this.selectedMapId === m.id ? 'btn-primary' : ''}" onclick="Menu.selectMap('${m.id}')">${m.name}</button>`;
+        });
+
+        // Garage Rendering
+        let gCars = document.getElementById('garage-cars');
+        gCars.innerHTML = "";
+        CarsData.forEach(c => {
+            let owned = PlayerState.ownedCars.includes(c.id);
+            gCars.innerHTML += `
+                <div class="car-option ${this.selectedCarId === c.id ? 'selected' : ''}" onclick="Menu.selectCar(${c.id})">
+                    <div style="display:flex; justify-content:between;">
+                        <strong>${c.name}</strong>
+                        <span style="color:${owned?'var(--success)':'#ffd700'}">${owned?'OWNED':'$'+c.price}</span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#aaa;">${c.type}</div>
+                </div>`;
+        });
+
+        this.renderCarSpecs();
+        this.renderProgression();
+    },
+    selectCar(id) { this.selectedCarId = id; AudioEngine.click(); this.renderAll(); },
+    selectMap(id) { this.selectedMapId = id; AudioEngine.click(); this.renderAll(); },
+    selectMode(id) { this.selectedModeId = id; AudioEngine.click(); this.renderAll(); },
+    changeGarageTab(tab) {
+        this.activeTab = tab;
+        document.getElementById('tab-upgrades').classList.toggle('active', tab==='upgrades');
+        document.getElementById('tab-visuals').classList.toggle('active', tab==='visuals');
+        document.getElementById('garage-tab-content-upgrades').style.display = tab==='upgrades'?'block':'none';
+        document.getElementById('garage-tab-content-visuals').style.display = tab==='visuals'?'block':'none';
+        AudioEngine.click();
+    },
+    switchProgressTab(tab) {
+        this.activeProgressTab = tab;
+        document.getElementById('tab-m').classList.toggle('active', tab==='m');
+        document.getElementById('tab-a').classList.toggle('active', tab==='a');
+        document.getElementById('container-missions').style.display = tab==='m'?'block':'none';
+        document.getElementById('container-achievements').style.display = tab==='a'?'block':'none';
+        AudioEngine.click();
+    },
+    renderCarSpecs() {
+        let car = CarsData[this.selectedCarId];
+        let owned = PlayerState.ownedCars.includes(car.id);
+        document.getElementById('garage-car-name').innerText = car.name;
+        document.getElementById('garage-car-status').innerText = owned ? (PlayerState.currentCar === car.id ? "ACTIVE" : "OWNED") : "AVAILABLE";
+        document.getElementById('garage-car-status').style.color = owned ? "var(--success)" : "#ffd700";
+
+        let up = PlayerState.upgrades[car.id] || { engine: 0, handling: 0, nitro: 0 };
+        
+        let html = `
+            ${this.specBar("TOP VELOCITY", car.speed + (up.engine * 15), 400)}
+            ${this.specBar("ACCELERATION MOMENTUM", car.accel + (up.engine * 20), 400)}
+            ${this.specBar("LATERAL STEERING GRIP", car.hand + (up.handling * 20), 400)}
+            ${this.specBar("NITROGEN CAPACITY", 100 + (up.nitro * 50), 300)}
+        `;
+        document.getElementById('garage-tab-content-upgrades').innerHTML = html;
+
+        // Visual coatings dynamic options
+        let paints = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff', '#222222'];
+        let paintHtml = "";
+        paints.forEach(p => {
+            let cVis = PlayerState.visuals[car.id] || { paint: '#ff0055', neon: '#00ffff' };
+            paintHtml += `<div onclick="Menu.setVisual('paint','${p}')" style="width:25px; height:25px; background:${p}; border-radius:50%; cursor:pointer; border:${cVis.paint===p?'2px solid #fff':'1px solid #666'}"></div>`;
+        });
+        document.getElementById('paint-options').innerHTML = paintHtml;
+
+        let actionBtn = document.getElementById('btn-garage-action');
+        if(!owned) {
+            actionBtn.innerText = `PURCHASE AUTO ($${car.price})`;
+            actionBtn.className = "btn btn-primary";
+        } else if (PlayerState.currentCar !== car.id) {
+            actionBtn.innerText = "DEPLOY VEHICLE";
+            actionBtn.className = "btn btn-primary";
+        } else {
+            actionBtn.innerText = "UPGRADE ENGINE (+$250)";
+            actionBtn.className = "btn";
+        }
+    },
+    specBar(label, value, max) {
+        let pct = Math.min(100, (value / max) * 100);
+        return `
+            <div class="stat-bar-container">
+                <div class="stat-label"><span>${label}</span><span>${Math.floor(value)}</span></div>
+                <div class="stat-bar"><div class="stat-fill" style="width:${pct}%"></div></div>
+            </div>`;
+    },
+    setVisual(type, value) {
+        if(!PlayerState.visuals[this.selectedCarId]) PlayerState.visuals[this.selectedCarId] = { paint: '#ff0055', neon: '#00ffff' };
+        PlayerState.visuals[this.selectedCarId][type] = value;
+        Storage.save();
+        AudioEngine.buy();
+        this.renderCarSpecs();
+    },
+    buyOrUpgrade() {
+        let car = CarsData[this.selectedCarId];
+        let owned = PlayerState.ownedCars.includes(car.id);
+
+        if(!owned) {
+            if(PlayerState.wallet >= car.price) {
+                PlayerState.wallet -= car.price;
+                PlayerState.ownedCars.push(car.id);
+                PlayerState.currentCar = car.id;
+                AudioEngine.buy();
+            } else { alert("Insufficient metrics allocation (Cash)."); }
+        } else if (PlayerState.currentCar !== car.id) {
+            PlayerState.currentCar = car.id;
+            AudioEngine.click();
+        } else {
+            // Upgrade structural component
+            if(PlayerState.wallet >= 250) {
+                PlayerState.wallet -= 250;
+                if(!PlayerState.upgrades[car.id]) PlayerState.upgrades[car.id] = { engine: 0, handling: 0, nitro: 0 };
+                PlayerState.upgrades[car.id].engine++;
+                PlayerState.upgrades[car.id].handling++;
+                PlayerState.upgrades[car.id].nitro++;
+                AudioEngine.buy();
+            } else { alert("Insufficient upgrade funding."); }
+        }
+        Storage.save();
+        this.renderAll();
+    },
+    renderProgression() {
+        let cm = document.getElementById('container-missions');
+        cm.innerHTML = "";
+        MissionEngine.missions.slice(0, 15).forEach(m => {
+            cm.innerHTML += `
+                <div style="border:1px solid var(--border); padding:10px; margin:5px 0; border-radius:8px; display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2)">
+                    <div><div style="font-size:0.9rem;">${m.desc}</div><div style="font-size:0.75rem; color:var(--primary);">Bounty: $${m.reward}</div></div>
+                    <span style="color:#aaa; font-weight:bold;">PENDING</span>
+                </div>`;
+        });
+
+        let ca = document.getElementById('container-achievements');
+        ca.innerHTML = "";
+        MissionEngine.achievements.slice(0, 15).forEach(a => {
+            ca.innerHTML += `
+                <div style="border:1px solid var(--border); padding:10px; margin:5px 0; border-radius:8px; display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2)">
+                    <div><div style="font-size:0.9rem; font-weight:bold; color:var(--primary);">${a.title}</div><div style="font-size:0.75rem; color:#ccc;">${a.desc}</div></div>
+                    <span style="color:#aaa;">UNLOCKED</span>
+                </div>`;
+        });
+    }
+};
+
+// --- SETTINGS MANAGEMENT ---
+const Settings = {
+    updateControlVisibility() {
+        let type = document.getElementById('setting-controls').value;
+        document.getElementById('touch-controls').style.display = (type === 'touch') ? 'block' : 'none';
+        this.save();
+    },
+    save() {
+        // Structural settings configurations are updated dynamically from element values directly
+    }
+};
+
+// --- RUNTIME SIMULATION ROAD ENGINE (PSEUDO-3D VECTOR MATHEMATICS) ---
+const Game = {
+    canvas: null,
+    ctx: null,
+    running: false,
+    fps: 0,
+    lastTime: 0,
+    
+    // Core Mathematical Segment Pipeline
+    segments: [],
+    segmentLength: 200,
+    trackLength: null,
+    cameraDepth: null,
+    cameraHeight: 1000,
+    fieldOfView: 100,
+    
+    // Track Metrics
+    playerX: 0, 
+    position: 0, 
+    speed: 0,
+    maxSpeed: 0,
+    accel: 0,
+    breaking: 0,
+    decel: 0,
+    handling: 0,
+
+    // Controls tracking Vector
+    keys: { left: false, right: false, accel: false, brake: false, nitro: false },
+
+    // Environment/Weather Layering State
+    weather: 'sunny',
+    timeCycle: 0,
+    weatherTime: 0,
+    particles: [],
+
+    // Systems Entities
+    aiVehicles: [],
+
+    init() {
+        this.canvas = document.getElementById('gameCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        window.addEventListener('resize', () => this.resize());
+        this.resize();
+        this.bindInputEvents();
+    },
+    resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.cameraDepth = 1 / Math.tan((this.fieldOfView / 2) * Math.PI / 180);
+    },
+    bindInputEvents() {
+        const handler = (e, status) => {
+            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') this.keys.accel = status;
+            if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.keys.brake = status;
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.keys.left = status;
+            if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.keys.right = status;
+            if (e.key === 'Shift') this.keys.nitro = status;
+        };
+        window.addEventListener('keydown', (e) => handler(e, true));
+        window.addEventListener('keyup', (e) => handler(e, false));
+
+        // Touch setups safely structured
+        const setupTouch = (id, keyName) => {
+            let el = document.getElementById(id);
+            el.addEventListener('touchstart', (e) => { e.preventDefault(); this.keys[keyName] = true; }, {passive:false});
+            el.addEventListener('touchend', (e) => { e.preventDefault(); this.keys[keyName] = false; }, {passive:false});
+        };
+        setupTouch('btn-left', 'left');
+        setupTouch('btn-right', 'right');
+        setupTouch('btn-accel', 'accel');
+        setupTouch('btn-brake', 'brake');
+        setupTouch('btn-nitro-touch', 'nitro');
+    },
+    buildTrack() {
+        this.segments = [];
+        // Assemble structural mathematical curving loops
+        let sectionLength = 100;
+        
+        for(let i=0; i<800; i++) {
+            let curve = 0;
+            let hill = 0;
+            
+            // Mathematical topology definition
+            if (i > 100 && i < 200) curve = 3;
+            if (i > 250 && i < 350) curve = -4;
+            if (i > 400 && i < 600) { curve = 2; hill = Math.sin(i / 10) * 40; }
+            if (i > 650 && i < 750) curve = -2;
+
+            this.segments.push({
+                index: i,
+                p1: { world: { x: 0, y: this.hillFunction(i), z: i * this.segmentLength }, screen: { x: 0, y: 0, w: 0 } },
+                p2: { world: { x: 0, y: this.hillFunction(i+1), z: (i + 1) * this.segmentLength }, screen: { x: 0, y: 0, w: 0 } },
+                curve: curve,
+                color: (Math.floor(i/3)%2) ? { road: '#1e1e1e', grass: '#0a2414', strip: '#ffffff' } : { road: '#242424', grass: '#0f331c', strip: '#000000' }
+            });
+        }
+        this.trackLength = this.segments.length * this.segmentLength;
+        this.spawnAIVehicles();
+    },
+    hillFunction(index) {
+        return Math.sin(index / 12) * 300;
+    },
+    spawnAIVehicles() {
+        this.aiVehicles = [];
+        for (let i = 20; i < this.segments.length - 10; i += 15) {
+            this.aiVehicles.push({
+                position: i * this.segmentLength,
+                trackX: (Math.random() * 1.6) - 0.8,
+                speed: 60 + Math.random() * 50,
+                color: `hsl(${Math.random()*360}, 80%, 50%)`,
+                width: 0.3
+            });
+        }
+    },
+    start() {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('hud').style.display = 'block';
+        Settings.updateControlVisibility();
+
+        // Calculate selected stats safely
+        let baseCar = CarsData[PlayerState.currentCar];
+        let up = PlayerState.upgrades[PlayerState.currentCar] || { engine: 0, handling: 0, nitro: 0 };
+        
+        this.maxSpeed = (baseCar.speed + (up.engine * 15)) * 1.2;
+        this.accel = baseCar.accel * 0.4;
+        this.breaking = baseCar.hand * 0.9;
+        this.handling = (baseCar.hand + (up.handling * 20)) * 0.008;
+        this.decel = 15;
+        
+        this.position = 0;
+        this.playerX = 0;
+        this.speed = 0;
+        
+        let selectedMap = MapsData.find(m => m.id === Menu.selectedMapId) || MapsData[0];
+        this.weather = selectedMap.weather;
+
+        this.buildTrack();
+        AudioEngine.startEngine();
+        
+        this.running = true;
+        this.lastTime = performance.now();
+        requestAnimationFrame((t) => this.loop(t));
+    },
+    loop(time) {
+        if (!this.running) return;
+        let dt = (time - this.lastTime) / 1000;
+        if(dt > 0.1) dt = 0.1; // Cap time anomalies
+        this.lastTime = time;
+
+        this.update(dt);
+        this.render();
+
+        this.fps = Math.round(1/dt);
+        document.getElementById('hud-fps').innerText = `${this.fps} FPS`;
+
+        requestAnimationFrame((t) => this.loop(t));
+    },
+    update(dt) {
+        // Engine sound modulation matching performance velocity
+        AudioEngine.updateEngine(this.speed / this.maxSpeed);
+
+        // Control systems handling evaluation
+        let actualMax = this.maxSpeed;
+        if (this.keys.nitro) {
+            actualMax *= 1.35;
+            this.speed += this.accel * 2 * dt;
+            if(Math.random() < 0.4) AudioEngine.nitro();
+        }
+
+        if (this.keys.accel) {
+            this.speed += this.accel * dt;
+        } else if (this.keys.brake) {
+            this.speed -= this.breaking * dt;
+        } else {
+            this.speed -= this.decel * dt;
+        }
+
+        // Environment modifiers friction mapping matrix
+        let traction = 1.0;
+        if(this.weather === 'rain' || this.weather === 'storm') traction = 0.7;
+        if(this.weather === 'snow') traction = 0.5;
+
+        if (this.speed > actualMax) this.speed -= 100 * dt;
+        if (this.speed < 0) this.speed = 0;
+
+        // Position Tracking updates
+        this.position += this.speed * 5 * dt;
+        if (this.position >= this.trackLength) {
+            this.position -= this.trackLength; // Loop or pass objective completed
+            this.raceComplete();
+        }
+
+        let playerSegment = this.findSegment(this.position);
+        
+        // Handling mechanics calculations with curve modifiers
+        if (this.keys.left) this.playerX -= this.handling * traction * dt * (this.speed / 100);
+        if (this.keys.right) this.playerX += this.handling * traction * dt * (this.speed / 100);
+
+        // Dynamic centrifugal gravity pulling force execution
+        this.playerX -= (this.speed / actualMax) * playerSegment.curve * 0.005 * traction;
+
+        // Bound validation clamping
+        if(this.playerX > 2) this.playerX = 2;
+        if(this.playerX < -2) this.playerX = -2;
+
+        // Update Traffic Vectors
+        this.aiVehicles.forEach(ai => {
+            let aiSegmentBefore = this.findSegment(ai.position);
+            ai.position += ai.speed * 4 * dt;
+            if (ai.position >= this.trackLength) ai.position -= this.trackLength;
+            
+            // Simple lane variation simulation
+            ai.trackX += Math.sin(ai.position/1000) * 0.002;
+
+            // Mathematical proximity collision array metrics
+            if (Math.abs(this.position - ai.position) < 200) {
+                let segment = this.findSegment(ai.position);
+                if (Math.abs(this.playerX - ai.trackX) < 0.35) {
+                    // CRASH TRACE DETECTED
+                    AudioEngine.crash();
+                    this.speed *= 0.3;
+                    PlayerState.wallet = Math.max(0, PlayerState.wallet - 50);
+                    document.getElementById('hud-currency').innerText = `$${PlayerState.wallet}`;
+                }
+            }
+        });
+
+        // Weather System Particle Vectors Management
+        this.updateParticles(dt);
+
+        // GUI metric evaluations output
+        document.getElementById('hud-speed').innerText = Math.floor(this.speed);
+        document.getElementById('hud-distance').innerText = `DIST: ${Math.floor(this.position)} / ${this.trackLength} m`;
+        document.getElementById('hud-time').innerText = `TIME: ${new Date().toLocaleTimeString()}`;
+    },
+    findSegment(z) {
+        return this.segments[Math.floor(z / this.segmentLength) % this.segments.length];
+    },
+    project(p, cameraX, cameraY, cameraZ, width, height) {
+        let worldX = p.world.x - cameraX;
+        let worldY = p.world.y - cameraY;
+        let worldZ = p.world.z - cameraZ;
+        
+        let scale = this.cameraDepth / worldZ;
+        p.screen.x = Math.round((width / 2) + (scale * worldX * width / 2));
+        p.screen.y = Math.round((height / 2) - (scale * worldY * height / 2));
+        p.screen.w = Math.round(scale * width);
+    },
+    updateParticles(dt) {
+        if(this.weather === 'sunny') return;
+        if(this.particles.length < 60 && Math.random() < 0.6) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: 0,
+                vy: 400 + Math.random() * 300,
+                vx: (this.weather === 'storm') ? -200 : (Math.random() * 50 - 25),
+                size: Math.random() * 2 + 1
+            });
+        }
+        this.particles.forEach((p, i) => {
+            p.y += p.vy * dt;
+            p.x += p.vx * dt;
+            if(p.y > this.canvas.height) this.particles.splice(i, 1);
+        });
+    },
+    render() {
+        let w = this.canvas.width;
+        let h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+
+        let mapConfig = MapsData.find(m => m.id === Menu.selectedMapId) || MapsData[0];
+        
+        // Render Sky Geometry Gradient Base Line
+        let grad = this.ctx.createLinearGradient(0,0,0,h);
+        grad.addColorStop(0, mapConfig.sky);
+        grad.addColorStop(1, mapConfig.bg);
+        this.ctx.fillStyle = grad;
+        this.ctx.fillRect(0,0,w,h);
+
+        // Core Pseudo-3D Mathematical Camera Calculations Pipeline
+        let baseSegment = this.findSegment(this.position);
+        let basePercent = (this.position % this.segmentLength) / this.segmentLength;
+        let playerPercent = (this.position % this.trackLength);
+        
+        let cameraX = this.playerX * 1000;
+        let maxy = h;
+        
+        let startX = 0;
+        let startPercent = 0;
+
+        // Render Road Segments Back to Front (Painters Algorithm Optimization)
+        let maxSegmentsToDraw = 120;
+        let currentCamZ = this.position - (basePercent * this.segmentLength);
+        let camHeight = this.cameraHeight + this.hillFunction(Math.floor(this.position / this.segmentLength));
+
+        for(let n=0; n<maxSegmentsToDraw; n++) {
+            let segment = this.segments[(baseSegment.index + n) % this.segments.length];
+            let loopModifier = (segment.index < baseSegment.index) ? this.trackLength : 0;
+            
+            this.project(segment.p1, cameraX, camHeight, currentCamZ - loopModifier, w, h);
+            this.project(segment.p2, cameraX, camHeight, currentCamZ - loopModifier, w, h);
+
+            // X offset transformation alignment tracking curves calculations
+            cameraX -= segment.curve * 2.2;
+
+            if((segment.p1.world.z - currentCamZ <= this.cameraDepth) || (segment.p2.screen.y >= maxy)) continue;
+
+            let p1 = segment.p1.screen;
+            let p2 = segment.p2.screen;
+
+            // Draw Road Geometry Polygonal structures
+            this.drawSegmentPolygon(w, p1.x, p1.y, p1.w, p2.x, p2.y, p2.w, segment.color);
+            maxy = p2.y;
+        }
+
+        // Draw Generated Traffic Entities Projection mapping
+        this.aiVehicles.forEach(ai => {
+            if(Math.abs(ai.position - this.position) < 18000 && ai.position > this.position) {
+                let aiSeg = this.findSegment(ai.position);
+                let loopMod = (ai.position < this.position) ? this.trackLength : 0;
+                let calcP = { world: { x: ai.trackX * 1100, y: this.hillFunction(Math.floor(ai.position/this.segmentLength)), z: ai.position }, screen: {} };
+                this.project(calcP, this.playerX * 1000, camHeight, currentCamZ - loopMod, w, h);
+                
+                if(calcP.screen.y > 0 && calcP.screen.y < h) {
+                    this.ctx.fillStyle = ai.color;
+                    let carW = ai.width * calcP.screen.w;
+                    this.ctx.fillRect(calcP.screen.x - carW/2, calcP.screen.y - carW/3, carW, carW/3);
+                    // Canopy Top Structural Detail
+                    this.ctx.fillStyle = "#111";
+                    this.ctx.fillRect(calcP.screen.x - carW/3, calcP.screen.y - carW/1.8, carW/1.5, carW/4);
+                }
+            }
+        });
+
+        // Draw Player Vehicle Asset Representation (Vector Scale Projection)
+        this.drawPlayerVehicle(w, h);
+
+        // Render Particle Layer (Rain, Snow, Storm Systems)
+        if(this.particles.length > 0) {
+            this.ctx.fillStyle = (this.weather === 'snow') ? '#fff' : 'rgba(174,219,255,0.4)';
+            this.particles.forEach(p => {
+                this.ctx.fillRect(p.x, p.y, p.size, p.size * (this.weather==='snow'?1:5));
+            });
+        }
+    },
+    drawSegmentPolygon(w, x1, y1, w1, x2, y2, w2, color) {
+        let r1 = w1 * 1.2; // Structural road scales mapping ratio
+        let r2 = w2 * 1.2;
+        
+        // Grass Fill Background layers
+        this.ctx.fillStyle = color.grass;
+        this.ctx.fillRect(0, y2, w, y1 - y2);
+
+        // Core Road Deck Fill
+        this.ctx.fillStyle = color.road;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x1 - r1, y1);
+        this.ctx.lineTo(x2 - r2, y2);
+        this.ctx.lineTo(x2 + r2, y2);
+        this.ctx.lineTo(x1 + r1, y1);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        // Structural Center Dash Strips Array Geometry Mapping
+        this.ctx.fillStyle = color.strip;
+        this.ctx.fillRect(x1 - w1*0.02, y2, w1*0.04, y1 - y2);
+    },
+    drawPlayerVehicle(w, h) {
+        let carW = 160;
+        let carH = 70;
+        let screenX = w / 2;
+        let screenY = h - 60;
+
+        let carColor = PlayerState.visuals[PlayerState.currentCar]?.paint || '#ff0055';
+        let neonColor = PlayerState.visuals[PlayerState.currentCar]?.neon || 'rgba(0,240,255,0.6)';
+
+        // Shake simulation tracking velocity vibration
+        if (this.speed > 10) {
+            screenY += (Math.random() * 2 - 1) * (this.speed / 120);
+        }
+
+        // Draw Underglow Neon if active
+        let up = PlayerState.upgrades[PlayerState.currentCar] || { engine: 0 };
+        if(up.engine > 1) {
+            this.ctx.shadowColor = neonColor;
+            this.ctx.shadowBlur = 30;
+            this.ctx.fillStyle = neonColor;
+            this.ctx.fillRect(screenX - carW/2.2, screenY, carW/1.1, 10);
+            this.ctx.shadowBlur = 0; // Reset
+        }
+
+        // Chassis Structural Vector Array Layering
+        this.ctx.fillStyle = carColor;
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX - carW/2, screenY);
+        this.ctx.lineTo(screenX - carW/2.4, screenY - carH/1.8);
+        this.ctx.lineTo(screenX + carW/2.4, screenY - carH/1.8);
+        this.ctx.lineTo(screenX + carW/2, screenY);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        // Canopy Windshield System Structure
+        this.ctx.fillStyle = "#11131a";
+        this.ctx.beginPath();
+        this.ctx.moveTo(screenX - carW/3.5, screenY - carH/1.8);
+        this.ctx.lineTo(screenX - carW/5, screenY - carH);
+        this.ctx.lineTo(screenX + carW/5, screenY - carH);
+        this.ctx.lineTo(screenX + carW/3.5, screenY - carH/1.8);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        // Wheels Vector Blocks Mapping
+        this.ctx.fillStyle = "#0a0a0f";
+        this.ctx.fillRect(screenX - carW/1.9, screenY - carH/3, carW/7, carH/1.5);
+        this.ctx.fillRect(screenX + carW/2.6, screenY - carH/3, carW/7, carH/1.5);
+
+        // Performance Exhaust Flash Rendering (Nitro Injection Trigger Mapping)
+        if(this.keys.nitro) {
+            let fGrad = this.ctx.createRadialGradient(screenX, screenY, 5, screenX, screenY+40, 30);
+            fGrad.addColorStop(0, '#fff');
+            fGrad.addColorStop(0.4, 'rgba(0,200,255,0.8)');
+            fGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            this.ctx.fillStyle = fGrad;
+            this.ctx.fillRect(screenX - 30, screenY, 60, 40);
+        }
+    },
+    raceComplete() {
+        this.running = false;
+        AudioEngine.stopEngine();
+        let payout = 850;
+        PlayerState.wallet += payout;
+        Storage.save();
+        alert(`Operational Event Met. Base Completion Dividend Allocated: +$${payout}`);
+        document.getElementById('hud').style.display = 'none';
+        Menu.init();
+    }
+};
+
+// --- INITIALIZATION INTERFACE TRIGGER ---
+window.onload = () => {
+    Menu.init();
+    Game.init();
+};
+</script>
+</body>
+</html>
