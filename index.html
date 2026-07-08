@@ -79,7 +79,7 @@
             transform: translateY(-50%);
             color: white;
             z-index: 50;
-            max-width: 550px;
+            max-width: 600px;
             user-select: none;
         }
 
@@ -116,10 +116,51 @@
             line-height: 1.6;
             color: #a2bccc;
             font-weight: 300;
+            margin-bottom: 25px;
         }
         
         .hero-section p .interactive-word span {
             color: #a2bccc;
+        }
+
+        /* ─── NEW ADDED SECTIONS STYLES ─── */
+        .sub-heading {
+            font-size: 20px;
+            font-weight: 600;
+            color: #7bf1ff;
+            margin-top: 30px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .sub-heading .interactive-word span {
+            color: #7bf1ff;
+            text-shadow: 0 0 8px rgba(123, 241, 255, 0.4);
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 40px;
+            margin-top: 25px;
+        }
+
+        .stat-box h3 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .stat-box h3 .interactive-word span {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .stat-box p {
+            font-size: 14px;
+            color: #759ba9;
+            margin: 0;
+        }
+        .stat-box p .interactive-word span {
+            color: #759ba9;
         }
 
         /* ─── BACKGROUND & NEBULA EFFECTS ─── */
@@ -231,6 +272,22 @@
     <div class="hero-section">
         <h1 id="mystical-title">Welcome to a Mystical World</h1>
         <p id="mystical-desc">Explore a bioluminescent atmosphere where nature meets digital art. Click on Projects to discover my tools and applications.</p>
+        
+        <!-- NEW TEXT SECTION 1: The Vision -->
+        <h2 class="sub-heading" id="vision-title">The Art of Coding</h2>
+        <p id="vision-desc">Every line of code is like planting a glowing seed in this digital landscape, creating interactive magic for the curious mind.</p>
+
+        <!-- NEW TEXT SECTION 2: Interactive Stats -->
+        <div class="stats-container">
+            <div class="stat-box">
+                <h3 id="stat-1">12+</h3>
+                <p id="stat-desc-1">Concepts Built</p>
+            </div>
+            <div class="stat-box">
+                <h3 id="stat-2">99%</h3>
+                <p id="stat-desc-2">Pure Magic</p>
+            </div>
+        </div>
     </div>
 
     <!-- Canvas / Background Fields -->
@@ -259,6 +316,7 @@
         // ─── IMPROVED TEXT EXPLOSION SCRIPT ───
         function modernTextSplitter(elementId) {
             const target = document.getElementById(elementId);
+            if(!target) return;
             const textHTML = target.innerText;
             const words = textHTML.split(" ");
             target.innerHTML = ""; 
@@ -302,9 +360,15 @@
             });
         }
 
-        // Run the script
+        // Run the script for old and new text elements
         modernTextSplitter("mystical-title");
         modernTextSplitter("mystical-desc");
+        modernTextSplitter("vision-title");
+        modernTextSplitter("vision-desc");
+        modernTextSplitter("stat-1");
+        modernTextSplitter("stat-desc-1");
+        modernTextSplitter("stat-2");
+        modernTextSplitter("stat-desc-2");
 
 
         // ─── ORIGINAL BACKGROUND ANIMATIONS ───
