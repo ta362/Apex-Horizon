@@ -1,337 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Starry Midnight Horizon Cruise</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>রাতের দৃশ্যের গ্রাফিক্স</title>
     <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
+        body {
             margin: 0;
             padding: 0;
+            overflow: hidden; /* স্ক্রলবার লুকানোর জন্য */
+            background-color: #000; /* ডিফল্ট কালো ব্যাকগ্রাউন্ড */
         }
 
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #020617;
-            font-family: monospace, sans-serif;
-        }
-
-        #game-container {
-            position: relative;
+        /* ব্যাকগ্রাউন্ড ছবি */
+        .container {
             width: 100vw;
             height: 100vh;
+            background-image: url('96008.jpg'); /* আপনার ছবিটির নাম এখানে দিন */
+            background-size: cover;
+            background-position: center;
+            position: relative;
         }
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            background: #020617;
+        /* ঘাস এবং ফুলের হালকা নড়াচড়া */
+        @keyframes sway {
+            0%, 100% {
+                transform: rotate(-1deg);
+            }
+            50% {
+                transform: rotate(1deg);
+            }
         }
 
-        /* ওএসডি ডিসপ্লে লার্জ এবং ক্লিয়ার ইন্টারফেস */
-        #hud-container {
+        .container::before {
+            content: '';
             position: absolute;
-            bottom: 50px;
+            bottom: 0;
+            left: 0;
             width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 10%;
-            pointer-events: none;
-            z-index: 10;
-            color: #e2e8f0;
-            font-size: 1.6rem;
-            font-weight: bold;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            height: 40%; /* ছবির নীচের অংশ যেখানে ঘাস আছে */
+            background-image: inherit; /* একই ছবি ব্যবহার */
+            background-position: bottom;
+            background-size: cover;
+            filter: blur(1px); /* হালকা ব্লার, যাতে মনে হয় নড়াচড়া করছে */
+            animation: sway 5s ease-in-out infinite;
+            z-index: 1; /* ঘাস সবার সামনে থাকবে */
         }
 
-        .hud-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* মিটমিট করা তারা */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60%; /* ছবির ওপরের অংশ যেখানে আকাশ আছে */
+            z-index: 0; /* তারা ব্যাকগ্রাউন্ডের পেছনে থাকবে */
         }
 
-        .hud-sub {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            opacity: 0.7;
-            letter-spacing: 2px;
-            margin-top: 4px;
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 2s infinite ease-in-out;
         }
 
-        #autodrive-text {
-            font-size: 0.9rem;
-            align-self: flex-end;
-            letter-spacing: 2px;
-            color: #38bdf8;
-            animation: blink 2s infinite;
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
+        /* বিভিন্ন সাইজের তারা তৈরি করার জন্য CSS */
+        .star:nth-child(1) { top: 10%; left: 15%; animation-delay: 0.1s; }
+        .star:nth-child(2) { top: 25%; left: 30%; animation-delay: 0.3s; width: 3px; height: 3px;}
+        .star:nth-child(3) { top: 40%; left: 10%; animation-delay: 0.5s; }
+        .star:nth-child(4) { top: 5%; left: 50%; animation-delay: 0.7s; }
+        .star:nth-child(5) { top: 18%; left: 70%; animation-delay: 0.9s; width: 2px; height: 2px;}
+        .star:nth-child(6) { top: 35%; left: 85%; animation-delay: 1.1s; }
+        .star:nth-child(7) { top: 50%; left: 20%; animation-delay: 1.3s; }
+        .star:nth-child(8) { top: 60%; left: 40%; animation-delay: 1.5s; width: 1px; height: 1px;}
+        .star:nth-child(9) { top: 5%; left: 80%; animation-delay: 1.7s; }
+        .star:nth-child(10) { top: 22%; left: 95%; animation-delay: 1.9s; }
+        /* আপনি এখানে আরও তারা যোগ করতে পারেন */
+
+        /* শুটিং স্টার */
+        .shooting-star {
+            position: absolute;
+            top: 0;
+            left: -100px;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(-45deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+            filter: drop-shadow(0 0 6px rgba(255, 255, 255, 1));
+            animation: shooting 3s linear infinite;
         }
+
+        @keyframes shooting {
+            0% {
+                transform: translateX(0) translateY(0) rotate(-45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100vw) translateY(100vh) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+
     </style>
 </head>
 <body>
-
-<div id="game-container">
-    <canvas id="gameCanvas"></canvas>
-
-    <div id="hud-container">
-        <div class="hud-block">
-            <div id="hud-miles">6.7</div>
-            <span class="hud-sub">miles</span>
+    <div class="container">
+        <!-- তারার কন্টেইনার -->
+        <div class="stars">
+            <!-- আপনি আরও .star ডিব যোগ করতে পারেন -->
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
         </div>
-        <div id="autodrive-text">[ autodrive on ]</div>
-        <div class="hud-block">
-            <div id="hud-mph">77.4</div>
-            <span class="hud-sub">mph</span>
-        </div>
+
+        <!-- শুটিং স্টার -->
+        <div class="shooting-star"></div>
+        <div class="shooting-star" style="animation-delay: 1s;"></div>
+        <div class="shooting-star" style="animation-delay: 2s;"></div>
     </div>
-</div>
-
-<script>
-const Game = {
-    canvas: null, ctx: null,
-    segments: [], segmentLength: 150, trackLength: null, cameraDepth: null, cameraHeight: 700,
-    playerX: 0, position: 0, speed: 77.4,
-    skyOffset: 0, stars: [], flowers: [],
-
-    init() {
-        this.canvas = document.getElementById('gameCanvas');
-        this.ctx = this.canvas.getContext('2d');
-        window.addEventListener('resize', () => this.resize());
-        this.resize();
-        this.generateEnvironment();
-        this.buildTrack();
-        this.loop();
-    },
-    resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        // প্রজেকশন ফিক্স যেন কোনো স্ক্রিনেই রোড গায়েব না হয়
-        this.cameraDepth = 1 / Math.tan((80 / 2) * Math.PI / 180);
-    },
-    generateEnvironment() {
-        // ১. প্রথম ছবির মতো চমৎকার তারামণ্ডল ও গ্যালাক্সি ডাস্ট
-        this.stars = [];
-        for(let i=0; i<300; i++) {
-            this.stars.push({
-                x: Math.random() * window.innerWidth * 2,
-                y: Math.random() * (window.innerHeight * 0.65),
-                size: Math.random() * 2.5 + 0.5,
-                alpha: Math.random() * 0.5 + 0.5
-            });
-        }
-
-        // ২. মাঠের ভেতরে উজ্জ্বল নীল ও সোনালী ফুল (Glowing Magic Flowers)
-        this.flowers = [];
-        for(let i=0; i<150; i++) {
-            this.flowers.push({
-                x: Math.random() * window.innerWidth,
-                y: (window.innerHeight * 0.45) + Math.random() * (window.innerHeight * 0.55),
-                size: Math.random() * 3 + 2,
-                color: Math.random() > 0.3 ? '#38bdf8' : '#fbbf24' // নীল ও গোল্ডেন ফুল
-            });
-        }
-    },
-    buildTrack() {
-        this.segments = [];
-        // ছবির মতো নিখুঁত কার্ভ ট্র্যাকিং লুপ
-        for(let i=0; i<1000; i++) {
-            let curve = 0;
-            if (i > 30 && i < 150) curve = 1.5;
-            if (i > 220 && i < 400) curve = -2.0;
-            if (i > 500 && i < 700) curve = 2.5;
-
-            this.segments.push({
-                index: i,
-                p1: { world: { x: 0, y: Math.sin(i/15)*60, z: i * this.segmentLength }, screen: {} },
-                p2: { world: { x: 0, y: Math.sin((i+1)/15)*60, z: (i + 1) * this.segmentLength }, screen: {} },
-                curve: curve
-            });
-        }
-        this.trackLength = this.segments.length * this.segmentLength;
-    },
-    loop() {
-        this.update();
-        this.render();
-        requestAnimationFrame(() => this.loop());
-    },
-    update() {
-        let dt = 0.016; // স্মুথ ফিক্সড টাইমস্টেপ
-        this.position += this.speed * 8 * dt;
-
-        let seg = this.findSegment(this.position);
-        // অটোড্রাইভ বাঁক লজিক
-        this.playerX -= (this.speed / 100) * seg.curve * 0.0025;
-        this.skyOffset += seg.curve * 0.05;
-
-        if (this.position >= this.trackLength) this.position = 0;
-
-        // HUD রিয়েলটাইম রিডিং আপডেট
-        document.getElementById('hud-miles').innerText = (6.7 + (this.position / 80000)).toFixed(1);
-        let fluctuatingSpeed = 77.4 + Math.sin(performance.now()/300)*0.4;
-        document.getElementById('hud-mph').innerText = fluctuatingSpeed.toFixed(1);
-    },
-    findSegment(z) { 
-        return this.segments[Math.floor(z / this.segmentLength) % this.segments.length]; 
-    },
-    project(p, cameraX, cameraY, cameraZ, width, height) {
-        let worldX = p.world.x - cameraX;
-        let worldY = p.world.y - cameraY;
-        let worldZ = p.world.z - cameraZ;
-        
-        if (worldZ <= 0) worldZ = 1; 
-        let scale = this.cameraDepth / worldZ;
-        
-        p.screen.x = Math.round((width / 2) + (scale * worldX * width / 2));
-        p.screen.y = Math.round((height / 2) - (scale * worldY * height / 2));
-        p.screen.w = Math.round(scale * width);
-    },
-    render() {
-        let w = this.canvas.width, h = this.canvas.height;
-        let ctx = this.ctx;
-        ctx.clearRect(0, 0, w, h);
-
-        // ১. ছবির মতো ড্রামাটিক ডার্ক ব্লু নাইট স্কাই গ্রাডিয়েন্ট
-        let skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.5);
-        skyGrad.addColorStop(0, "#01040d");
-        skyGrad.addColorStop(0.4, "#031026");
-        skyGrad.addColorStop(0.8, "#08254f");
-        skyGrad.addColorStop(1, "#1e40af");
-        ctx.style = skyGrad; ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, w, h);
-
-        // ২. ঝকঝকে তারা এবং মিল্কিওয়ে ডাস্ট এনিমেশন
-        this.stars.forEach(star => {
-            let cx = (star.x - this.skyOffset * 10) % (w * 2);
-            if (cx < 0) cx += (w * 2);
-            if (cx < w) {
-                ctx.fillStyle = `rgba(56, 189, 248, ${star.alpha * (0.7 + Math.random()*0.3)})`;
-                ctx.beginPath();
-                ctx.arc(cx, star.y, star.size, 0, Math.PI*2);
-                ctx.fill();
-            }
-        });
-
-        // ৩. প্রজেক্টেড গ্রাসল্যান্ড উপত্যকা এবং থ্রিডি রোড ড্রয়িং লুপ
-        let baseSegment = this.findSegment(this.position);
-        let basePercent = (this.position % this.segmentLength) / this.segmentLength;
-        let currentCamZ = this.position - (basePercent * this.segmentLength);
-        let camHeight = this.cameraHeight + (Math.sin(baseSegment.index/15)*60);
-
-        let maxy = h;
-        let cameraX = this.playerX * 1000;
-
-        for(let n=0; n<130; n++) {
-            let segment = this.segments[(baseSegment.index + n) % this.segments.length];
-            let loopModifier = (segment.index < baseSegment.index) ? this.trackLength : 0;
-            
-            this.project(segment.p1, cameraX, camHeight, currentCamZ - loopModifier, w, h);
-            this.project(segment.p2, cameraX, camHeight, currentCamZ - loopModifier, w, h);
-
-            cameraX -= segment.curve * 1.8;
-            if(segment.p2.screen.y >= maxy || segment.p1.world.z - currentCamZ <= 0) continue;
-
-            let p1 = segment.p1.screen, p2 = segment.p2.screen;
-            let r1 = p1.w * 0.9, r2 = p2.w * 0.9; // পারফেক্ট রোড উইডথ
-
-            // ছবির মতো গাঢ় সবুজ জাদুকরী ঘাসের মাঠ (Rich Dark Green Plains)
-            ctx.fillStyle = (segment.index % 2 === 0) ? "#041d13" : "#052418";
-            ctx.fillRect(0, p2.y, w, p1.y - p2.y);
-
-            // মাঝখানের পিচ ঢালা রাস্তা (Asphalt Mid Road)
-            ctx.fillStyle = "#334155";
-            ctx.beginPath(); 
-            ctx.moveTo(p1.x - r1, p1.y); ctx.lineTo(p2.x - r2, p2.y); 
-            ctx.lineTo(p2.x + r2, p2.y); ctx.lineTo(p1.x + r1, p1.y); 
-            ctx.closePath(); ctx.fill();
-
-            // দুই পাশের সলিড হোয়াইট এজ বর্ডার লাইন
-            ctx.fillStyle = "#f8fafc";
-            ctx.fillRect(p1.x - r1, p2.y, p1.w*0.015, p1.y - p2.y);
-            ctx.fillRect(p1.x + r1 - p1.w*0.015, p2.y, p1.w*0.015, p1.y - p2.y);
-
-            // আপনার খোঁজা মাঝখানের রোড লাইন (White Center Dashed Line)
-            if(segment.index % 5 === 0) {
-                ctx.fillStyle = "#f8fafc";
-                ctx.fillRect(p1.x - p1.w*0.01, p2.y, p1.w*0.02, p1.y - p2.y);
-            }
-
-            // অ্যালুমিনিয়াম সেফটি বেরিকেট/গার্ডরেল (বাম পাশে)
-            let bx1 = p1.x - (r1 * 1.08), bx2 = p2.x - (r2 * 1.08);
-            ctx.strokeStyle = "#94a3b8";
-            ctx.lineWidth = p1.w * 0.02;
-            ctx.beginPath(); ctx.moveTo(bx1, p1.y - p1.w*0.04); ctx.lineTo(bx2, p2.y - p2.w*0.04); ctx.stroke();
-            ctx.fillStyle = "#475569";
-            ctx.fillRect(bx1, p1.y - p1.w*0.04, p1.w*0.008, p1.w*0.04);
-
-            maxy = p2.y;
-        }
-
-        // ৪. মাঠের ওপরে উজ্জ্বল ভাসমান ফুলের এফেক্ট রেন্ডার
-        this.flowers.forEach(fl => {
-            ctx.fillStyle = fl.color;
-            ctx.shadowBlur = 10; ctx.shadowColor = fl.color;
-            ctx.beginPath();
-            ctx.arc(fl.x, fl.y, fl.size, 0, Math.PI*2);
-            ctx.fill();
-            ctx.shadowBlur = 0; // শ্যাডো রিসেট
-        });
-
-        // ৫. চমৎকার হোয়াইট মিনিমালিস্ট লাক্সারি কার (White Sports Car)
-        this.drawCar(w, h);
-    },
-    drawCar(w, h) {
-        let ctx = this.ctx, screenX = w / 2, screenY = h - 160;
-        let carW = 220, carH = 85;
-
-        // কার শ্যাডো
-        ctx.fillStyle = "rgba(0,0,0,0.4)";
-        ctx.fillRect(screenX - carW/2, screenY + carH - 12, carW, 12);
-
-        // লোয়ার ব্ল্যাক বাম্পার/ডিফ্যুজার
-        ctx.fillStyle = "#0f172a";
-        ctx.fillRect(screenX - carW/2.1, screenY + carH - 25, carW/1.05, 15);
-
-        // মেইন বডি (Pure White Body)
-        ctx.fillStyle = "#f1f5f9";
-        ctx.beginPath();
-        ctx.moveTo(screenX - carW/2, screenY + carH - 50);
-        ctx.lineTo(screenX - carW/2.1, screenY + carH - 25);
-        ctx.lineTo(screenX + carW/2.1, screenY + carH - 25);
-        ctx.lineTo(screenX + carW/2, screenY + carH - 50);
-        ctx.lineTo(screenX + carW/2.5, screenY);
-        ctx.lineTo(screenX - carW/2.5, screenY);
-        ctx.closePath(); ctx.fill();
-
-        // ছবির মতো স্লিক ব্যাক গ্লাস উইন্ডো
-        ctx.fillStyle = "#1e293b";
-        ctx.beginPath();
-        ctx.moveTo(screenX - carW/3, screenY + 5);
-        ctx.lineTo(screenX - carW/2.7, screenY + carH - 55);
-        ctx.lineTo(screenX + carW/2.7, screenY + carH - 55);
-        ctx.lineTo(screenX + carW/3, screenY + 5);
-        ctx.closePath(); ctx.fill();
-
-        // স্লিম টেল লাইটস (Tail Lights)
-        ctx.fillStyle = "#3b0712"; // ডার্ক রেড স্লিম স্ট্রিপ
-        ctx.fillRect(screenX - carW/2.15, screenY + carH - 42, 35, 6);
-        ctx.fillRect(screenX + carW/2.15 - 35, screenY + carH - 42, 35, 6);
-
-        // চাকা (Rear Tires)
-        ctx.fillStyle = "#020617";
-        ctx.fillRect(screenX - carW/2.18, screenY + carH - 15, 22, 15);
-        ctx.fillRect(screenX + carW/2.18 - 22, screenY + carH - 15, 22, 15);
-    }
-};
-
-window.onload = () => { Game.init(); };
-</script>
 </body>
 </html>
