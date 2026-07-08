@@ -3,23 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>রাতের দৃশ্যের গ্রাফিক্স</title>
+    <title>আমার জাদুকরী ওয়েবসাইট</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
             background: linear-gradient(to bottom, #010616 0%, #03163a 60%, #0c2d54 100%);
-            overflow: hidden;
+            overflow-x: hidden;
             width: 100vw;
             height: 100vh;
             position: relative;
         }
 
-        /* মেঘের মতো হালকা আবহ */
+        /* ─── নতুন ওয়েবসাইট কন্টেন্ট সেকশন ─── */
+        
+        /* নেভিগেশন বার (গ্লাস এফেক্ট) */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100; /* এটাকে সবার উপরে রাখা হয়েছে */
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            color: #7bf1ff;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+            text-shadow: 0 0 10px rgba(123, 241, 255, 0.5);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: 0.3s;
+            opacity: 0.8;
+        }
+
+        nav ul li a:hover {
+            color: #7bf1ff;
+            opacity: 1;
+            text-shadow: 0 0 8px #7bf1ff;
+        }
+
+        /* মেইন টেক্সট এরিয়া */
+        .hero-section {
+            position: absolute;
+            top: 40%;
+            left: 10%;
+            transform: translateY(-50%);
+            color: white;
+            z-index: 50;
+            max-width: 600px;
+        }
+
+        .hero-section h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #ffffff, #7bf1ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-section p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #ccdbec;
+        }
+
+        /* সুন্দর একটি বাটন */
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: rgba(123, 241, 255, 0.1);
+            color: #7bf1ff;
+            text-decoration: none;
+            border: 1px solid #7bf1ff;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: 0.4s;
+            box-shadow: 0 0 15px rgba(123, 241, 255, 0.2);
+        }
+
+        .btn:hover {
+            background: #7bf1ff;
+            color: #03163a;
+            box-shadow: 0 0 25px rgba(123, 241, 255, 0.6);
+            transform: translateY(-3px);
+        }
+
+
+        /* ─── আগের অ্যানিমেশন পার্ট (অপরিবর্তিত) ─── */
         .nebula {
             position: absolute;
             top: 0;
@@ -31,7 +130,6 @@
             z-index: 1;
         }
 
-        /* তারা মিটমিট করার এনিমেশন */
         @keyframes twinkle {
             0%, 100% { opacity: 0.3; transform: scale(0.8); }
             50% { opacity: 1; transform: scale(1.2); }
@@ -45,20 +143,10 @@
             box-shadow: 0 0 4px #fff;
         }
 
-        /* শুটিং স্টার */
         @keyframes shoot {
-            0% {
-                transform: translate(0, 0) rotate(-35deg) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-                transform: translate(-10px, 7px) rotate(-35deg) scale(1);
-            }
-            100% {
-                transform: translate(-600px, 420px) rotate(-35deg) scale(1);
-                opacity: 0;
-            }
+            0% { transform: translate(0, 0) rotate(-35deg) scale(0); opacity: 0; }
+            10% { opacity: 1; transform: translate(-10px, 7px) rotate(-35deg) scale(1); }
+            100% { transform: translate(-600px, 420px) rotate(-35deg) scale(1); opacity: 0; }
         }
 
         .shooting-star {
@@ -70,7 +158,6 @@
             opacity: 0;
         }
 
-        /* ঘাস ও ফুলের কন্টেইনার */
         .field {
             position: absolute;
             bottom: 0;
@@ -79,7 +166,6 @@
             z-index: 5;
         }
 
-        /* ঘাসের ব্লেড জেনারেট করার বেসিক স্টাইল */
         .grass {
             position: absolute;
             bottom: 0;
@@ -89,7 +175,6 @@
             transform-origin: bottom center;
         }
 
-        /* জোনাকি পোকা বা গ্লোয়িং ডট */
         @keyframes float-glow {
             0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
             50% { transform: translateY(-20px) translateX(10px); opacity: 0.9; filter: drop-shadow(0 0 12px #00f3ff); }
@@ -103,7 +188,6 @@
             filter: drop-shadow(0 0 6px #00d4ff);
         }
 
-        /* মেইন ফায়ারফ্লাই বা উজ্জ্বল ফুল */
         .main-flower {
             position: absolute;
             bottom: 25%;
@@ -121,50 +205,51 @@
             100% { transform: rotate(3deg) translateX(2px); }
         }
 
-        /* উইন্ড বা বাতাস এনিমেশন ঘাসের জন্য */
-        @keyframes wind {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(3deg); }
-        }
-        
-        @keyframes wind-reverse {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(-2.5deg); }
-        }
+        @keyframes wind { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(3deg); } }
+        @keyframes wind-reverse { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-2.5deg); } }
     </style>
 </head>
 <body>
+
+    <header>
+        <a href="#" class="logo">MyHorizon</a>
+        <nav>
+            <ul>
+                <li><a href="#">হোম</a></li>
+                <li><a href="#">গ্যালারি</a></li>
+                <li><a href="#">আমার সম্পর্কে</a></li>
+                <li><a href="#">যোগাযোগ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="hero-section">
+        <h1>স্বাগতম এক জাদুকরী দুনিয়ায়</h1>
+        <p>এটি একটি অ্যানিমেটেড ওয়েব এক্সপেরিয়েন্স। এখানে তারা খসে পড়া, মিটমিট করা আলো আর মৃদু বাতাসে ঘাসের দোলা আপনার মনকে শান্ত করবে। আপনি চাইলে আপনার পছন্দমতো লেখা এখানে যুক্ত করতে পারেন।</p>
+        <a href="#" class="btn">আরও জানুন</a>
+    </div>
 
     <div class="nebula"></div>
     <div id="star-field"></div>
     <div class="field" id="grass-field"></div>
 
-    <!-- গ্লোয়িং নীল ফুল (SVG দিয়ে নিখুঁত করা হয়েছে) -->
     <svg class="main-flower" viewBox="0 0 100 100">
-        <!-- ডাঁটা -->
         <path d="M50,100 Q45,70 50,50" stroke="#094a3a" stroke-width="3" fill="none" />
-        <!-- পাপড়িগুলো -->
         <g transform="translate(50,50)">
             <ellipse cx="0" cy="-20" rx="12" ry="22" fill="#a6f1ff" opacity="0.95"/>
             <ellipse cx="0" cy="20" rx="12" ry="22" fill="#76deff" opacity="0.85"/>
             <ellipse cx="-20" cy="0" rx="22" ry="12" fill="#8ee5ff" opacity="0.9"/>
             <ellipse cx="20" cy="0" rx="22" ry="12" fill="#76deff" opacity="0.9"/>
             <ellipse cx="-15" cy="-15" rx="16" ry="16" fill="#bbf5ff" opacity="0.9"/>
-            <ellipse cx="15" cy="15" rx="16" ry="16" fill="#60d3ff" opacity="0.8"/>
-            <ellipse cx="15" cy="-15" rx="16" ry="16" fill="#8ee5ff" opacity="0.9"/>
-            <ellipse cx="-15" cy="15" rx="16" ry="16" fill="#52cdff" opacity="0.85"/>
-            <!-- মাঝখানের অংশ -->
             <circle cx="0" cy="0" r="6" fill="#006680"/>
             <circle cx="0" cy="0" r="3" fill="#fff"/>
         </g>
     </svg>
 
     <script>
-        // অটোমেটিক তারা তৈরি করার স্ক্রিপ্ট
+        // তারা জেনারেটর
         const starField = document.getElementById('star-field');
-        const starCount = 80;
-
-        for (let i = 0; i < starCount; i++) {
+        for (let i = 0; i < 80; i++) {
             const star = document.createElement('div');
             star.classList.add('star');
             const size = Math.random() * 2 + 1;
@@ -172,49 +257,36 @@
             star.style.height = `${size}px`;
             star.style.top = `${Math.random() * 60}%`;
             star.style.left = `${Math.random() * 100}%`;
-            
-            // র্যান্ডম মিটমিট স্পিড
             star.style.animation = `twinkle ${Math.random() * 3 + 2}s infinite ease-in-out`;
             star.style.animationDelay = `${Math.random() * 2}s`;
-            
             starField.appendChild(star);
         }
 
-        // শুটিং স্টার লুপ
+        // শুটিং স্টার
         setInterval(() => {
             const shootingStar = document.createElement('div');
             shootingStar.classList.add('shooting-star');
             shootingStar.style.top = `${Math.random() * 30}%`;
             shootingStar.style.right = `${Math.random() * 20}%`;
             shootingStar.style.animation = `shoot 1.5s linear forwards`;
-            
             document.body.appendChild(shootingStar);
-            
-            setTimeout(() => {
-                shootingStar.remove();
-            }, 1500);
-        }, 4000); // প্রতি ৪ সেকেন্ড পর পর শুটিং স্টার পড়বে
+            setTimeout(() => { shootingStar.remove(); }, 1500);
+        }, 4000);
 
-        // ঘাস এবং ছোট নীল ফুল/জোনাকি জেনারেটর
+        // ঘাস জেনারেটর
         const grassField = document.getElementById('grass-field');
-        const grassCount = 250;
-
-        for (let i = 0; i < grassCount; i++) {
+        for (let i = 0; i < 250; i++) {
             const grass = document.createElement('div');
             grass.classList.add('grass');
-            const height = Math.random() * 150 + 80; // র্যান্ডম লম্বা
-            grass.style.height = `${height}px`;
+            grass.style.height = `${Math.random() * 150 + 80}px`;
             grass.style.left = `${Math.random() * 100}%`;
-            
-            // বাতাসের দোলা
             const anim = Math.random() > 0.5 ? 'wind' : 'wind-reverse';
             grass.style.animation = `${anim} ${Math.random() * 3 + 3}s infinite ease-in-out alternate`;
             grass.style.animationDelay = `${Math.random() * 2}s`;
-            
             grassField.appendChild(grass);
         }
 
-        // গ্লোয়িং ডট বা ছোট নীল ফুল (জোনাকি স্টাইল)
+        // জোনাকি আলো
         for(let i=0; i<35; i++){
             const firefly = document.createElement('div');
             firefly.classList.add('firefly');
@@ -223,10 +295,8 @@
             firefly.style.height = `${size}px`;
             firefly.style.bottom = `${Math.random() * 50 + 10}%`;
             firefly.style.left = `${Math.random() * 100}%`;
-            
             firefly.style.animation = `float-glow ${Math.random() * 4 + 4}s infinite ease-in-out alternate`;
             firefly.style.animationDelay = `${Math.random() * 3}s`;
-            
             grassField.appendChild(firefly);
         }
     </script>
