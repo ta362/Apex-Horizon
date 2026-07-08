@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Horizon | Realistic Mystical Meadow</title>
+    <title>Apex Horizon | Mystical Meadow</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,7 @@
             position: relative;
         }
 
-        /* ─── NAVIGATION BAR ─── */
+        /* ─── NAVIGATION BAR (CLEAN & MINIMAL) ─── */
         header {
             position: fixed;
             top: 0;
@@ -74,7 +74,7 @@
         /* ─── HERO TEXT AREA ─── */
         .hero-section {
             position: absolute;
-            top: 35%;
+            top: 40%;
             left: 8%;
             transform: translateY(-50%);
             color: white;
@@ -99,18 +99,19 @@
             font-weight: 300;
         }
 
-        /* ─── BACKGROUND EFFECTS ─── */
+        /* ─── BACKGROUND & NEBULA EFFECTS ─── */
         .nebula {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 70% 30%, rgba(0, 162, 255, 0.12), transparent 60%),
-                        radial-gradient(circle at 30% 60%, rgba(13, 89, 140, 0.25), transparent 70%);
+            background: radial-gradient(circle at 70% 30%, rgba(0, 162, 255, 0.15), transparent 60%),
+                        radial-gradient(circle at 30% 60%, rgba(13, 89, 140, 0.3), transparent 70%);
             z-index: 1;
         }
 
+        /* Twinkling Stars */
         @keyframes twinkle {
             0%, 100% { opacity: 0.2; }
             50% { opacity: 1; filter: drop-shadow(0 0 4px #fff); }
@@ -123,6 +124,7 @@
             z-index: 2;
         }
 
+        /* Shooting Stars */
         @keyframes shoot {
             0% { transform: translate(0, 0) rotate(-35deg) scale(0); opacity: 0; }
             5% { opacity: 1; transform: translate(-10px, 7px) rotate(-35deg) scale(1); }
@@ -138,104 +140,85 @@
             opacity: 0;
         }
 
-        /* ─── DENSE MEADOW LAYERS ─── */
+        /* ─── MEADOW & GRASS AREA ─── */
         .field {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 75%;
+            height: 70%;
             z-index: 5;
         }
 
         .grass {
             position: absolute;
-            bottom: -15px;
-            border-radius: 80% 80% 0 0;
+            bottom: -10px;
+            width: 2.5px;
+            background: linear-gradient(to top, #010f13, #042e2b, #09594b, #11876a);
+            border-radius: 40% 40% 0 0;
             transform-origin: bottom center;
         }
 
-        /* 3D স্তরের গভীরতা তৈরি করার জন্য স্টাইল */
-        .grass-back {
-            width: 2px;
-            background: linear-gradient(to top, #010a0d, #031f1d, #06382f);
-            filter: blur(1px);
-            z-index: 6;
-        }
-
-        .grass-mid {
-            width: 2.5px;
-            background: linear-gradient(to top, #010f13, #042e2b, #09594b, #0e6e58);
-            z-index: 8;
-        }
-
-        .grass-front {
-            width: 3.5px;
-            background: linear-gradient(to top, #02151a, #063f3b, #0d7361, #1bb08d);
-            filter: drop-shadow(2px 0 2px rgba(0,0,0,0.4));
-            z-index: 12;
-        }
-
-        /* Fireflies */
+        /* Glowing Fireflies (Like Pinterest Image) */
         @keyframes float-glow {
-            0% { transform: translateY(0) translateX(0) scale(0.6); opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { transform: translateY(-100px) translateX(-15px) scale(1); opacity: 0; }
+            0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0.2; }
+            50% { opacity: 1; transform: translateY(-40px) translateX(15px) scale(1.2); }
+            100% { transform: translateY(-80px) translateX(-10px) scale(0.8); opacity: 0; }
         }
 
         .firefly {
             position: absolute;
             background: radial-gradient(circle, #7bf1ff 0%, rgba(0, 183, 255, 0.6) 50%, transparent 100%);
             border-radius: 50%;
-            z-index: 9;
+            z-index: 6;
             filter: drop-shadow(0 0 8px #00d4ff) drop-shadow(0 0 15px #0077ff);
         }
 
-        /* Glowing Flower (Sits within the mid-front layers) */
+        /* ─── GLOWING BLUE FLOWER ─── */
         .main-flower {
             position: absolute;
             bottom: 18%;
-            left: 68%;
-            width: 95px;
-            height: 95px;
+            left: 65%;
+            width: 90px;
+            height: 90px;
             z-index: 10;
             transform-origin: bottom center;
             animation: flower-sway 5s ease-in-out infinite alternate;
-            filter: drop-shadow(0 0 25px rgba(123, 241, 255, 0.85));
+            filter: drop-shadow(0 0 20px rgba(123, 241, 255, 0.8));
         }
 
         @keyframes flower-sway {
-            0% { transform: rotate(-3deg); }
-            100% { transform: rotate(4deg); }
+            0% { transform: rotate(-2deg); }
+            100% { transform: rotate(3deg); }
         }
 
-        /* Wind Animations */
-        @keyframes wind-slow { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(2.5deg); } }
-        @keyframes wind-mid { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(4deg); } }
-        @keyframes wind-fast { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(5.5deg); } }
+        @keyframes wind { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(4deg); } }
+        @keyframes wind-reverse { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-3deg); } }
     </style>
 </head>
 <body>
 
+    <!-- Header Navigation (Only Projects Left) -->
     <header>
         <a href="#" class="logo">APEX HORIZON</a>
         <nav>
             <ul>
-                <li><a href="#projects">Projects</a></li>
+                <li><a href="#projects" id="project-btn">Projects</a></li>
             </ul>
         </nav>
     </header>
 
+    <!-- Hero Content -->
     <div class="hero-section">
         <h1>Welcome to a Mystical World</h1>
         <p>Explore a bioluminescent atmosphere where nature meets digital art. Click on Projects to discover my tools and applications.</p>
     </div>
 
+    <!-- Canvas / Background Fields -->
     <div class="nebula"></div>
     <div id="star-field"></div>
-    
     <div class="field" id="grass-field"></div>
 
+    <!-- Glowing Blue Flower (SVG matching the aesthetic) -->
     <svg class="main-flower" viewBox="0 0 100 100">
         <path d="M50,100 Q46,75 50,50" stroke="#052c24" stroke-width="4" fill="none" />
         <g transform="translate(50,50)">
@@ -253,7 +236,7 @@
     </svg>
 
     <script>
-        // Stars
+        // Generating Twinkling Stars
         const starField = document.getElementById('star-field');
         for (let i = 0; i < 90; i++) {
             const star = document.createElement('div');
@@ -268,7 +251,7 @@
             starField.appendChild(star);
         }
 
-        // Shooting Stars
+        // Shooting Stars Interval
         setInterval(() => {
             const shootingStar = document.createElement('div');
             shootingStar.classList.add('shooting-star');
@@ -279,61 +262,43 @@
             setTimeout(() => { shootingStar.remove(); }, 1800);
         }, 5000);
 
-        // Highly Dense Realistic Grass Generator
+        // Generating Grass Blades
         const grassField = document.getElementById('grass-field');
-        
-        // স্তর ১: পেছনের পাতলা ও অন্ধকার ঘাস (Background Layer)
-        for (let i = 0; i < 250; i++) {
+        const grassCount = 280;
+        for (let i = 0; i < grassCount; i++) {
             const grass = document.createElement('div');
-            grass.classList.add('grass', 'grass-back');
-            grass.style.height = `${Math.random() * 140 + 120}px`;
+            grass.classList.add('grass');
+            grass.style.height = `${Math.random() * 180 + 90}px`;
             grass.style.left = `${Math.random() * 100}%`;
-            grass.style.animation = `wind-slow ${Math.random() * 3 + 4}s infinite ease-in-out alternate`;
+            const anim = Math.random() > 0.5 ? 'wind' : 'wind-reverse';
+            grass.style.animation = `${anim} ${Math.random() * 4 + 3}s infinite ease-in-out alternate`;
             grass.style.animationDelay = `${Math.random() * 2}s`;
             grassField.appendChild(grass);
         }
 
-        // স্তর ২: মাঝের সাধারণ ঘাস (Midground Layer)
-        for (let i = 0; i < 200; i++) {
-            const grass = document.createElement('div');
-            grass.classList.add('grass', 'grass-mid');
-            grass.style.height = `${Math.random() * 120 + 90}px`;
-            grass.style.left = `${Math.random() * 100}%`;
-            grass.style.animation = `wind-mid ${Math.random() * 2 + 3}s infinite ease-in-out alternate`;
-            grass.style.animationDelay = `${Math.random() * 1.5}s`;
-            grassField.appendChild(grass);
-        }
-
-        // স্তর ৩: সামনের বড় এবং উজ্জ্বল ঘাস (Foreground Layer)
-        for (let i = 0; i < 150; i++) {
-            const grass = document.createElement('div');
-            grass.classList.add('grass', 'grass-front');
-            grass.style.height = `${Math.random() * 90 + 60}px`;
-            grass.style.left = `${Math.random() * 100}%`;
-            grass.style.animation = `wind-fast ${Math.random() * 1.5 + 2s}s infinite ease-in-out alternate`;
-            grass.style.animationDelay = `${Math.random() * 1s}`;
-            grassField.appendChild(grass);
-        }
-
-        // Fireflies
+        // Continuous Glowing Fireflies (Pinterest Style)
         function createFirefly() {
             const firefly = document.createElement('div');
             firefly.classList.add('firefly');
-            const size = Math.random() * 6 + 3;
+            const size = Math.random() * 7 + 4;
             firefly.style.width = `${size}px`;
             firefly.style.height = `${size}px`;
-            firefly.style.bottom = `${Math.random() * 45 + 10}%`;
+            firefly.style.bottom = `${Math.random() * 40 + 5}%`;
             firefly.style.left = `${Math.random() * 100}%`;
             
-            const duration = Math.random() * 5 + 4;
+            const duration = Math.random() * 4 + 4;
             firefly.style.animation = `float-glow ${duration}s linear forwards`;
             
             grassField.appendChild(firefly);
-            setTimeout(() => { firefly.remove(); }, duration * 1000);
+            
+            setTimeout(() => {
+                firefly.remove();
+            }, duration * 1000);
         }
 
-        setInterval(createFirefly, 250);
-        for(let i=0; i<25; i++) { createFirefly(); }
+        // Spawn fireflies constantly
+        setInterval(createFirefly, 300);
+        for(let i=0; i<20; i++) { createFirefly(); } // Initial batch
     </script>
 </body>
 </html>
