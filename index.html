@@ -83,7 +83,7 @@
             user-select: none;
         }
 
-        /* ─── SUPER SMOOTH LETTER EXPLOSION STYLES ─── */
+        /* ─── LETTER EXPLOSION STYLES ─── */
         .interactive-word {
             display: inline-block;
             margin-right: 8px;
@@ -94,10 +94,8 @@
         .interactive-word span {
             display: inline-block;
             cursor: pointer;
-            /* Cubic-bezier curve combined with hardware acceleration makes it buttery smooth */
-            transition: transform 1.2s cubic-bezier(0.1, 0.8, 0.2, 1), opacity 1s ease, filter 1s ease;
-            transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-            will-change: transform, opacity, filter;
+            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease, filter 1.2s ease;
+            transform: translate(0, 0) rotate(0deg) scale(1);
             opacity: 1;
         }
 
@@ -329,7 +327,7 @@
     </svg>
 
     <script>
-        // ─── HIGH-PERFORMANCE HARDWARE-ACCELERATED SPLITTER ───
+        // ─── ADVANCED LETTER-BASED EXPLOSION FOR BENGALI ───
         function modernTextSplitter(elementId) {
             const target = document.getElementById(elementId);
             if(!target) return;
@@ -338,7 +336,7 @@
             const parts = textHTML.split(/(\s+|<br>)/);
             target.innerHTML = ""; 
 
-            // Using Intl.Segmenter for complex Bengali clusters
+            // Intl.Segmenter correctly packages complex Bengali glyphs (letters + vowel signs)
             const segmenter = new Intl.Segmenter('bn', { granularity: 'grapheme' });
 
             parts.forEach(part => {
@@ -354,414 +352,33 @@
                 const wordSpan = document.createElement("span");
                 wordSpan.classList.add("interactive-word");
                 
+                // Wrap every true Bengali character unit inside its own span
                 const segments = Array.from(segmenter.segment(part));
                 segments.forEach(seg => {
                     const letterSpan = document.createElement("span");
                     letterSpan.innerText = seg.segment;
                     
+                    // Add hover event listener directly to each letter unit
                     const triggerExplosion = () => {
-                        const randomX = (Math.random() - 0.5) * window.innerWidth * 0.7;
-                        const randomY = (Math.random() - 0.5) * window.innerHeight * 0.7;
-                        const randomRotate = (Math.random() - 0.5) * 540; 
+                        const randomX = (Math.random() - 0.5) * window.innerWidth * 0.8;
+                        const randomY = (Math.random() - 0.5) * window.innerHeight * 0.8;
+                        const randomRotate = (Math.random() - 0.5) * 720; 
 
-                        // Using translate3d forces the browser to use the GPU (Super Smooth!)
-                        letterSpan.style.transform = `translate3d(${randomX}px, ${randomY}অ্যানিমেশনটি যাতে একদম **স্মুথ (Smooth)** এবং মাখন হয়, সেজন্য পুরো সিস্টেমটি আপডেট করে দেওয়া হলো। 
-
-বাংলা প্রতিটি অক্ষরের কার-চিহ্নগুলো একসাথে ধরে রেখেও সেগুলোকে পারফেক্টলি ছিটকে দেওয়ার জন্য এবং অ্যানিমেশনটিকে ল্যাগ-ফ্রি করতে আমরা ব্রাউজারের **`requestAnimationFrame`** এবং CSS-এর **`will-change`** প্রপার্টি ব্যবহার করেছি। এর ফলে দুর্বল বা সাধারণ ফোনেও লেখাগুলো একদম স্মুথলি এবং লাইটওয়েটভাবে চারদিকে ছড়িয়ে যাবে।
-
-সম্পূর্ণ আপডেট হওয়া কোডটি নিচে দেওয়া হলো, এটি আপনার ফাইলে রিপ্লেস করে নিন:
-
-```html
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Horizon | For My Indu</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, 'SolaimanLipi', Arial, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(to bottom, #010616 0%, #02112a 40%, #051d3d 70%, #0b355a 100%);
-            overflow-x: hidden;
-            width: 100vw;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* ─── NAVIGATION BAR ─── */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 25px 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.01);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .logo {
-            color: #7bf1ff;
-            font-size: 22px;
-            font-weight: 700;
-            text-decoration: none;
-            letter-spacing: 1.5px;
-            text-shadow: 0 0 15px rgba(123, 241, 255, 0.5);
-        }
-
-        nav ul {
-            list-style: none;
-        }
-
-        nav ul li a {
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
-            transition: 0.3s ease;
-            opacity: 0.8;
-            letter-spacing: 1px;
-            border: 1px solid rgba(255, 241, 241, 0.2);
-            padding: 8px 20px;
-            border-radius: 20px;
-            background: rgba(255, 123, 123, 0.03);
-        }
-
-        nav ul li a:hover {
-            color: #ff7b92;
-            opacity: 1;
-            background: rgba(255, 123, 123, 0.1);
-            box-shadow: 0 0 15px rgba(255, 123, 123, 0.3);
-        }
-
-        /* ─── HERO TEXT AREA ─── */
-        .hero-section {
-            position: relative;
-            padding-top: 140px;
-            padding-bottom: 100px;
-            left: 8%;
-            color: white;
-            z-index: 50;
-            max-width: 650px;
-            user-select: none;
-        }
-
-        /* ─── LETTER EXPLOSION STYLES (SMOOTH OVERHAUL) ─── */
-        .interactive-word {
-            display: inline-block;
-            margin-right: 8px;
-            margin-bottom: 4px;
-            white-space: nowrap;
-        }
-
-        .interactive-word span {
-            display: inline-block;
-            cursor: pointer;
-            /* Ultra smooth cubic-bezier transitions for high FPS */
-            transition: transform 1.2s cubic-bezier(0.1, 0.8, 0.25, 1), 
-                        opacity 1s ease-out, 
-                        filter 1s ease-out;
-            transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-            opacity: 1;
-            will-change: transform, opacity; /* Hardware acceleration */
-        }
-
-        .hero-section h1 {
-            font-size: 34px;
-            font-weight: 800;
-            line-height: 1.5;
-            margin-bottom: 25px;
-        }
-
-        /* H1 Title Color and Glow */
-        .hero-section h1 .interactive-word span {
-            color: #ff9ebb;
-            text-shadow: 0 0 12px rgba(255, 123, 146, 0.7);
-        }
-
-        /* Paragraph Text Colors */
-        .hero-section p {
-            font-size: 17px;
-            line-height: 1.8;
-            color: #e3f2fd;
-            font-weight: 300;
-            margin-bottom: 25px;
-            text-align: justify;
-        }
-        
-        .hero-section p .interactive-word span {
-            color: #e3f2fd;
-        }
-
-        /* ─── PROPOSAL BOTTOM HIGHLIGHT ─── */
-        .proposal-box {
-            margin-top: 35px;
-            padding: 20px;
-            border-left: 3px solid #ff7b92;
-            background: rgba(255, 123, 146, 0.05);
-            border-radius: 0 15px 15px 0;
-        }
-
-        .proposal-box p .interactive-word span {
-            color: #ffb3c1;
-            font-weight: 400;
-        }
-
-        .question-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #ff7b92;
-            margin-top: 15px;
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-        .question-title .interactive-word span {
-            color: #ff7b92;
-            text-shadow: 0 0 10px rgba(255, 123, 146, 0.5);
-        }
-
-        /* ─── BACKGROUND & NEBULA EFFECTS ─── */
-        .nebula {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 70% 30%, rgba(255, 0, 106, 0.08), transparent 60%),
-                        radial-gradient(circle at 30% 60%, rgba(13, 89, 140, 0.2), transparent 70%);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 1; filter: drop-shadow(0 0 4px #fff); }
-        }
-
-        .star {
-            position: absolute;
-            background-color: #fff;
-            border-radius: 50%;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        @keyframes shoot {
-            0% { transform: translate3d(0, 0, 0) rotate(-35deg) scale(0); opacity: 0; }
-            5% { opacity: 1; transform: translate3d(-10px, 7px, 0) rotate(-35deg) scale(1); }
-            100% { transform: translate3d(-500px, 350px, 0) rotate(-35deg) scale(1); opacity: 0; }
-        }
-
-        .shooting-star {
-            position: absolute;
-            width: 100px;
-            height: 1.5px;
-            background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-            z-index: 2;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* ─── MEADOW & GRASS AREA ─── */
-        .field {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 70%;
-            z-index: 5;
-            pointer-events: none;
-        }
-
-        .grass {
-            position: absolute;
-            bottom: -10px;
-            width: 2.5px;
-            background: linear-gradient(to top, #010f13, #0b222a, #42162b, #871146);
-            border-radius: 40% 40% 0 0;
-            transform-origin: bottom center;
-            will-change: transform;
-        }
-
-        @keyframes float-glow {
-            0% { transform: translate3d(0, 0, 0) scale(0.8); opacity: 0.2; }
-            50% { opacity: 1; transform: translate3d(15px, -40px, 0) scale(1.2); }
-            100% { transform: translate3d(-10px, -80px, 0) scale(0.8); opacity: 0; }
-        }
-
-        .firefly {
-            position: absolute;
-            background: radial-gradient(circle, #ffcbd5 0%, rgba(255, 0, 85, 0.6) 50%, transparent 100%);
-            border-radius: 50%;
-            z-index: 6;
-            filter: drop-shadow(0 0 8px #ff0055) drop-shadow(0 0 15px #ff7b92);
-            will-change: transform, opacity;
-        }
-
-        /* ─── GLOWING FLOWER ─── */
-        .main-flower {
-            position: fixed;
-            bottom: 12%;
-            right: 10%;
-            width: 100px;
-            height: 100px;
-            z-index: 10;
-            transform-origin: bottom center;
-            animation: flower-sway 5s ease-in-out infinite alternate;
-            filter: drop-shadow(0 0 20px rgba(255, 123, 146, 0.8));
-        }
-
-        @keyframes flower-sway {
-            0% { transform: rotate(-2deg); }
-            100% { transform: rotate(3deg); }
-        }
-
-        @keyframes wind { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(4deg); } }
-        @keyframes wind-reverse { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-3deg); } }
-
-        /* Responsive adjust for smaller screens */
-        @media (max-width: 768px) {
-            .hero-section {
-                left: 5%;
-                padding-right: 5%;
-                max-width: 90%;
-            }
-            .main-flower {
-                right: 5%;
-                bottom: 5%;
-                width: 70px;
-                height: 70px;
-            }
-            .hero-section h1 { font-size: 26px; }
-            .hero-section p { font-size: 15px; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Header Navigation -->
-    <header>
-        <a href="#" class="logo">APEX HORIZON</a>
-        <nav>
-            <ul>
-                <li><a href="#" id="project-btn">Our Story</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <!-- Hero Content -->
-    <div class="hero-section">
-        <h1 id="mystical-title">আমার演出 ইন্দু, আমার বেবি, আমার সুইটি, আমার কচু-মুচু সুইটি, আমার মোমো... ❤️</h1>
-        
-        <p id="desc-1">হয়তো পৃথিবীর সবচেয়ে সুন্দর প্রেমপত্রও আমার মনের সব কথা প্রকাশ করতে পারবে না। তবুও আজ সাহস করে আমার হৃদয়ের প্রতিটি অনুভূতি তোমার সামনে রেখে দিচ্ছি।</p>
-        
-        <p id="desc-2">জানো, তোমার সঙ্গে পরিচয় হওয়ার পর থেকে আমার পৃথিবীটা যেন আগের মতো নেই। তোমার হাসি আমার সবচেয়ে প্রিয় দৃশ্য, তোমার কণ্ঠ আমার সবচেয়ে প্রিয় সুর, আর তোমার নামটাই আমার সবচেয়ে প্রিয় শব্দ। দিনের শত ব্যস্ততার মাঝেও অজান্তেই তোমার কথাই ভাবি। মনে হয়, আমার প্রতিটি স্বপ্নের শুরু আর শেষ—দুটোই তুমি。</p>
-        
-        <p id="desc-3">তুমি আমার কাছে শুধু একজন মানুষ নও। তুমি আমার শান্তি, আমার সুখ, আমার ভরসা, আমার হাজারো স্বপ্নের ঠিকানা। যখনই তোমার কথা ভাবি, মনে হয় পৃথিবীতে এর চেয়ে সুন্দর অনুভূতি আর কিছু হতে পারে না। তোমাকে ছাড়া ভবিষ্যতের কোনো ছবিই আমি কল্পনা করতে পারি না।</p>
-        
-        <p id="desc-4">আমি তোমাকে চাঁদ এনে দেওয়ার প্রতিশ্রুতি দিতে পারব না, কিন্তু তোমার মুখের হাসিটা সারাজীবন ধরে রাখার জন্য নিজের সবটুকু দিয়ে চেষ্টা করব। আমি তোমাকে রাজপ্রাসাদ দিতে পারব না, কিন্তু এমন একটা হৃদয় দিতে পারি, যেখানে শুধু তোমারই রাজত্ব থাকবে। আমি নিখুঁত নই, কিন্তু আমার ভালোবাসাটা একদম সত্যি—যেটা প্রতিদিন, প্রতিটা মুহূর্তে শুধু তোমাকেই আরও বেশি ভালোবাসতে শিখছে।</p>
-
-        <p id="desc-5">আমার ইন্দু... যদি কোনোদিন পৃথিবী আমার বিপরীতে দাঁড়ায়, তবুও আমি শুধু একটা জিনিস চাইব—তুমি যেন আমার পাশে থাকো। তোমার হাতটা শক্ত করে ধরে জীবনের প্রতিটা সকাল, প্রতিটা বিকেল, প্রতিটা রাত একসঙ্গে কাটাতে চাই। তোমার সব হাসি, সব অভিমান, সব গল্প, সব স্বপ্নের অংশ হতে চাই।</p>
-        
-        <p id="desc-6">আজ এই ছোট্ট ওয়েবসাইটের প্রতিটি রঙ, প্রতিটি অ্যানিমেশন, প্রতিটি শব্দের পেছনে একটাই কারণ আছে—তুমি। কারণ তুমি আমার জীবনের সবচেয়ে সুন্দর অনুভূতি।</p>
-
-        <div class="proposal-box">
-            <p id="desc-7">তাই আজ আমার হৃদয়ের গভীর থেকে তোমাকে একটা প্রশ্ন করতে চাই...</p>
-            
-            <p id="desc-8">আমার ইন্দু, আমার বেবি, আমার সুইটি, আমার কচু-মুচু সুইটি, আমার মোমো... তুমি কি আমার জীবনের সবচেয়ে সুন্দর ভালোবাসা হয়ে সারাজীবন আমার পাশে থাকবে?</p>
-            
-            <h2 class="question-title" id="question-text">Will You Be My Forever? ❤️🌹<br>I Love You More Than Words Can Ever Say. ♾️💍</h2>
-        </div>
-    </div>
-
-    <!-- Canvas / Background Fields -->
-    <div class="nebula"></div>
-    <div id="star-field"></div>
-    <div class="field" id="grass-field"></div>
-
-    <!-- Glowing Pink/Red Flower -->
-    <svg class="main-flower" viewBox="0 0 100 100">
-        <path d="M50,100 Q46,75 50,50" stroke="#2c0514" stroke-width="4" fill="none" />
-        <g transform="translate(50,50)">
-            <ellipse cx="0" cy="-22" rx="14" ry="24" fill="#ffc2d1" opacity="0.95"/>
-            <ellipse cx="0" cy="22" rx="14" ry="24" fill="#ff69b4" opacity="0.85"/>
-            <ellipse cx="-22" cy="0" rx="24" ry="14" fill="#ff8ab4" opacity="0.9"/>
-            <ellipse cx="22" cy="0" rx="24" ry="14" fill="#ff527b" opacity="0.9"/>
-            <ellipse cx="-16" cy="-16" rx="18" ry="18" fill="#ffa8c5" opacity="0.9"/>
-            <ellipse cx="16" cy="16" rx="18" ry="18" fill="#ff4273" opacity="0.8"/>
-            <ellipse cx="16" cy="-16" rx="18" ry="18" fill="#ff8a9e" opacity="0.9"/>
-            <ellipse cx="-16" cy="16" rx="18" ry="18" fill="#ff3260" opacity="0.85"/>
-            <circle cx="0" cy="0" r="7" fill="#730029"/>
-            <circle cx="0" cy="0" r="3" fill="#fff"/>
-        </g>
-    </svg>
-
-    <script>
-        // ─── HIGH PERFORMANCE SMOOTH BENGALI LETTER SPLITTER ───
-        function modernTextSplitter(elementId) {
-            const target = document.getElementById(elementId);
-            if(!target) return;
-            const textHTML = target.innerHTML;
-            
-            const parts = textHTML.split(/(\s+|<br>)/);
-            target.innerHTML = ""; 
-
-            const segmenter = new Intl.Segmenter('bn', { granularity: 'grapheme' });
-
-            parts.forEach(part => {
-                if(part.trim() === "" || part === "<br>") {
-                    if(part === "<br>") {
-                        target.appendChild(document.createElement("br"));
-                    } else {
-                        target.appendChild(document.createTextNode(part));
-                    }
-                    return;
-                }
-
-                const wordSpan = document.createElement("span");
-                wordSpan.classList.add("interactive-word");
-                
-                const segments = Array.from(segmenter.segment(part));
-                segments.forEach(seg => {
-                    const letterSpan = document.createElement("span");
-                    letterSpan.innerText = seg.segment;
-                    
-                    const triggerExplosion = () => {
-                        // Smoothly randomizing explosion using translate3d for GPU optimization
-                        const randomX = (Math.random() - 0.5) * window.innerWidth * 0.75;
-                        const randomY = (Math.random() - 0.5) * window.innerHeight * 0.75;
-                        const randomRotate = (Math.random() - 0.5) * 600; 
-
-                        // requestAnimationFrame ensures stutter-free execution
-                        requestAnimationFrame(() => {
-                            letterSpan.style.transform = `translate3d(${randomX}px, ${randomY}px, 0) rotate(${randomRotate}deg) scale(1.35)`;
-                            letterSpan.style.filter = "drop-shadow(0 0 10px #ff7b92)"; 
-                            letterSpan.style.opacity = "0.8";
-                        });
+                        letterSpan.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg) scale(1.4)`;
+                        letterSpan.style.filter = "drop-shadow(0 0 12px #ff7b92)"; 
+                        letterSpan.style.opacity = "0.85";
 
                         setTimeout(() => {
-                            requestAnimationFrame(() => {
-                                letterSpan.style.transform = "translate3d(0, 0, 0) rotate(0deg) scale(1)";
-                                letterSpan.style.filter = "none";
-                                letterSpan.style.opacity = "1";
-                            });
-                        }, 2800);
+                            letterSpan.style.transform = "translate(0, 0) rotate(0deg) scale(1)";
+                            letterSpan.style.filter = "none";
+                            letterSpan.style.opacity = "1";
+                        }, 3000);
                     };
 
                     letterSpan.addEventListener("mouseenter", triggerExplosion);
                     letterSpan.addEventListener("touchstart", (e) => {
                         triggerExplosion();
-                    }, { passive: true });
+                    });
 
                     wordSpan.appendChild(letterSpan);
                 });
@@ -770,7 +387,7 @@
             });
         }
 
-        // Apply smoother text splits
+        // Run the script for all sections
         modernTextSplitter("mystical-title");
         modernTextSplitter("desc-1");
         modernTextSplitter("desc-2");
@@ -783,12 +400,12 @@
         modernTextSplitter("question-text");
 
 
-        // ─── STABLE BACKGROUND ANIMATIONS ───
+        // ─── BACKGROUND ANIMATIONS ───
         const starField = document.getElementById('star-field');
-        for (let i = 0; i < 80; i++) {
+        for (let i = 0; i < 90; i++) {
             const star = document.createElement('div');
             star.classList.add('star');
-            const size = Math.random() * 1.8 + 0.8;
+            const size = Math.random() * 2 + 0.8;
             star.style.width = `${size}px`;
             star.style.height = `${size}px`;
             star.style.top = `${Math.random() * 55}%`;
@@ -806,14 +423,14 @@
             shootingStar.style.animation = `shoot 1.8s linear forwards`;
             document.body.appendChild(shootingStar);
             setTimeout(() => { shootingStar.remove(); }, 1800);
-        }, 6000);
+        }, 5000);
 
         const grassField = document.getElementById('grass-field');
-        const grassCount = 140; // Reduced slightly for smoother scroll & interaction
+        const grassCount = 180;
         for (let i = 0; i < grassCount; i++) {
             const grass = document.createElement('div');
             grass.classList.add('grass');
-            grass.style.height = `${Math.random() * 130 + 70}px`;
+            grass.style.height = `${Math.random() * 140 + 70}px`;
             grass.style.left = `${Math.random() * 100}%`;
             const anim = Math.random() > 0.5 ? 'wind' : 'wind-reverse';
             grass.style.animation = `${anim} ${Math.random() * 4 + 3}s infinite ease-in-out alternate`;
@@ -822,10 +439,10 @@
         }
 
         function createFirefly() {
-            if (document.querySelectorAll('.firefly').length > 25) return;
+            if (document.querySelectorAll('.firefly').length > 30) return;
             const firefly = document.createElement('div');
             firefly.classList.add('firefly');
-            const size = Math.random() * 5 + 4;
+            const size = Math.random() * 6 + 4;
             firefly.style.width = `${size}px`;
             firefly.style.height = `${size}px`;
             firefly.style.bottom = `${Math.random() * 30 + 5}%`;
@@ -835,11 +452,14 @@
             firefly.style.animation = `float-glow ${duration}s linear forwards`;
             
             document.body.appendChild(firefly);
-            setTimeout(() => { firefly.remove(); }, duration * 1000);
+            
+            setTimeout(() => {
+                firefly.remove();
+            }, duration * 1000);
         }
 
-        setInterval(createFirefly, 550);
-        for(let i=0; i<10; i++) { createFirefly(); }
+        setInterval(createFirefly, 400);
+        for(let i=0; i<15; i++) { createFirefly(); }
     </script>
 </body>
 </html>
