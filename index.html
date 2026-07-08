@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আমার জাদুকরী ওয়েবসাইট</title>
+    <title>Mystical Horizon | Premium Web Experience</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
@@ -20,9 +20,9 @@
             position: relative;
         }
 
-        /* ─── নতুন ওয়েবসাইট কন্টেন্ট সেকশন ─── */
+        /* ─── NEW WEBSITE CONTENT SECTION ─── */
         
-        /* নেভিগেশন বার (গ্লাস এফেক্ট) */
+        /* Navigation Bar (Glassmorphism Effect) */
         header {
             position: fixed;
             top: 0;
@@ -32,19 +32,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100; /* এটাকে সবার উপরে রাখা হয়েছে */
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .logo {
             color: #7bf1ff;
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 700;
             text-decoration: none;
-            text-shadow: 0 0 10px rgba(123, 241, 255, 0.5);
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(123, 241, 255, 0.6);
         }
 
         nav ul {
@@ -53,85 +54,92 @@
         }
 
         nav ul li {
-            margin-left: 30px;
+            margin-left: 35px;
         }
 
         nav ul li a {
             color: #ffffff;
             text-decoration: none;
-            font-size: 16px;
-            transition: 0.3s;
-            opacity: 0.8;
+            font-size: 15px;
+            font-weight: 500;
+            transition: 0.3s ease;
+            opacity: 0.75;
+            letter-spacing: 0.5px;
         }
 
         nav ul li a:hover {
             color: #7bf1ff;
             opacity: 1;
-            text-shadow: 0 0 8px #7bf1ff;
+            text-shadow: 0 0 10px #7bf1ff;
         }
 
-        /* মেইন টেক্সট এরিয়া */
+        /* Hero Main Section Area */
         .hero-section {
             position: absolute;
-            top: 40%;
-            left: 10%;
+            top: 45%;
+            left: 8%;
             transform: translateY(-50%);
             color: white;
             z-index: 50;
-            max-width: 600px;
+            max-width: 650px;
         }
 
         .hero-section h1 {
-            font-size: 48px;
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.1;
             margin-bottom: 20px;
-            background: linear-gradient(to right, #ffffff, #7bf1ff);
+            background: linear-gradient(to right, #ffffff 30%, #7bf1ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .hero-section p {
             font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            color: #ccdbec;
+            line-height: 1.7;
+            margin-bottom: 35px;
+            color: #b0c7e1;
+            font-weight: 300;
         }
 
-        /* সুন্দর একটি বাটন */
+        /* Call To Action Button */
         .btn {
             display: inline-block;
-            padding: 12px 30px;
-            background: rgba(123, 241, 255, 0.1);
+            padding: 14px 35px;
+            background: rgba(123, 241, 255, 0.08);
             color: #7bf1ff;
             text-decoration: none;
-            border: 1px solid #7bf1ff;
-            border-radius: 25px;
+            border: 1px solid rgba(123, 241, 255, 0.7);
+            border-radius: 30px;
             font-weight: 600;
-            transition: 0.4s;
-            box-shadow: 0 0 15px rgba(123, 241, 255, 0.2);
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 0 15px rgba(123, 241, 255, 0.15);
         }
 
         .btn:hover {
             background: #7bf1ff;
-            color: #03163a;
-            box-shadow: 0 0 25px rgba(123, 241, 255, 0.6);
-            transform: translateY(-3px);
+            color: #020b1e;
+            box-shadow: 0 0 30px rgba(123, 241, 255, 0.6);
+            transform: translateY(-4px);
         }
 
 
-        /* ─── আগের অ্যানিমেশন পার্ট (অপরিবর্তিত) ─── */
+        /* ─── ANIMATION COMPONENTS ─── */
         .nebula {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 80% 20%, rgba(24, 78, 119, 0.4), transparent 50%),
-                        radial-gradient(circle at 20% 50%, rgba(12, 45, 84, 0.6), transparent 60%);
+            background: radial-gradient(circle at 80% 20%, rgba(24, 78, 119, 0.35), transparent 50%),
+                        radial-gradient(circle at 20% 50%, rgba(12, 45, 84, 0.55), transparent 60%);
             z-index: 1;
         }
 
         @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
             50% { opacity: 1; transform: scale(1.2); }
         }
 
@@ -191,17 +199,17 @@
         .main-flower {
             position: absolute;
             bottom: 25%;
-            left: 60%;
-            width: 80px;
-            height: 80px;
+            left: 65%;
+            width: 85px;
+            height: 85px;
             z-index: 10;
             transform-origin: bottom center;
             animation: flower-sway 4s ease-in-out infinite alternate;
-            filter: drop-shadow(0 0 15px rgba(123, 241, 255, 0.8));
+            filter: drop-shadow(0 0 18px rgba(123, 241, 255, 0.75));
         }
 
         @keyframes flower-sway {
-            0% { transform: rotate(-2deg) translateX(-2px); }
+            0% { transform: rotate(-3deg) translateX(-2px); }
             100% { transform: rotate(3deg) translateX(2px); }
         }
 
@@ -212,21 +220,21 @@
 <body>
 
     <header>
-        <a href="#" class="logo">MyHorizon</a>
+        <a href="#" class="logo">APEX HORIZON</a>
         <nav>
             <ul>
-                <li><a href="#">হোম</a></li>
-                <li><a href="#">গ্যালারি</a></li>
-                <li><a href="#">আমার সম্পর্কে</a></li>
-                <li><a href="#">যোগাযোগ</a></li>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Explore</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="#">Contact</a></li>
             </ul>
         </nav>
     </header>
 
     <div class="hero-section">
-        <h1>স্বাগতম এক জাদুকরী দুনিয়ায়</h1>
-        <p>এটি একটি অ্যানিমেটেড ওয়েব এক্সপেরিয়েন্স। এখানে তারা খসে পড়া, মিটমিট করা আলো আর মৃদু বাতাসে ঘাসের দোলা আপনার মনকে শান্ত করবে। আপনি চাইলে আপনার পছন্দমতো লেখা এখানে যুক্ত করতে পারেন।</p>
-        <a href="#" class="btn">আরও জানুন</a>
+        <h1>Welcome to a Mystical World</h1>
+        <p>Experience an immersive digital atmosphere. Watch the shooting stars cross the night sky, witness the stars twinkling, and feel the gentle breeze swaying through the magical glowing meadows.</p>
+        <a href="#" class="btn">Discover More</a>
     </div>
 
     <div class="nebula"></div>
@@ -247,7 +255,7 @@
     </svg>
 
     <script>
-        // তারা জেনারেটর
+        // Stars Generator
         const starField = document.getElementById('star-field');
         for (let i = 0; i < 80; i++) {
             const star = document.createElement('div');
@@ -262,7 +270,7 @@
             starField.appendChild(star);
         }
 
-        // শুটিং স্টার
+        // Shooting Stars Logic
         setInterval(() => {
             const shootingStar = document.createElement('div');
             shootingStar.classList.add('shooting-star');
@@ -273,7 +281,7 @@
             setTimeout(() => { shootingStar.remove(); }, 1500);
         }, 4000);
 
-        // ঘাস জেনারেটর
+        // Grass Blades Generator
         const grassField = document.getElementById('grass-field');
         for (let i = 0; i < 250; i++) {
             const grass = document.createElement('div');
@@ -286,7 +294,7 @@
             grassField.appendChild(grass);
         }
 
-        // জোনাকি আলো
+        // Bioluminescent Fireflies / Dots
         for(let i=0; i<35; i++){
             const firefly = document.createElement('div');
             firefly.classList.add('firefly');
