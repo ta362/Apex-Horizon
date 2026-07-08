@@ -83,18 +83,17 @@
             user-select: none;
         }
 
-        /* ─── WORD EXPLOSION / EFFECT STYLE ─── */
-        .interactive-text {
+        /* ─── NEW TEXT EXPLOSION FIXES ─── */
+        .interactive-word {
             display: inline-block;
-            margin-right: 8px;
+            margin-right: 10px;
             cursor: pointer;
-            position: relative;
         }
 
-        .interactive-text span {
+        .interactive-word span {
             display: inline-block;
-            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.5s ease;
-            transform: translate(0, 0) rotate(0deg);
+            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease, filter 1.2s ease;
+            transform: translate(0, 0) rotate(0deg) scale(1);
             opacity: 1;
         }
 
@@ -105,18 +104,22 @@
             margin-bottom: 15px;
         }
 
-        /* Gradient for H1 Words */
-        .hero-section h1 .interactive-text {
-            background: linear-gradient(to right, #ffffff, #7bf1ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* H1 Title Text Colors and Glow */
+        .hero-section h1 .interactive-word span {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(123, 241, 255, 0.6);
         }
 
+        /* Paragraph Text Colors */
         .hero-section p {
             font-size: 16px;
             line-height: 1.6;
             color: #a2bccc;
             font-weight: 300;
+        }
+        
+        .hero-section p .interactive-word span {
+            color: #a2bccc;
         }
 
         /* ─── BACKGROUND & NEBULA EFFECTS ─── */
@@ -253,58 +256,58 @@
     </svg>
 
     <script>
-        // ─── TEXT EXPLOSION SCRIPT ───
+        // ─── IMPROVED TEXT EXPLOSION SCRIPT ───
         function modernTextSplitter(elementId) {
             const target = document.getElementById(elementId);
             const textHTML = target.innerText;
             const words = textHTML.split(" ");
-            target.innerHTML = ""; // Clear original text
+            target.innerHTML = ""; 
 
             words.forEach(word => {
                 const wordSpan = document.createElement("span");
-                wordSpan.classList.add("interactive-text");
+                wordSpan.classList.add("interactive-word");
                 
-                // Break each word into letters
+                // Break word into letters wrapped in spans
                 wordSpan.innerHTML = word.split("").map(letter => `<span>${letter}</span>`).join("");
                 target.appendChild(wordSpan);
 
-                // Add Event Listeners for Mouse Hover & Touch Tap
                 const triggerExplosion = () => {
                     const letters = wordSpan.querySelectorAll("span");
                     letters.forEach(letter => {
-                        // Random values for blast distance across the whole screen
-                        const randomX = (Math.random() - 0.5) * window.innerWidth * 0.8;
-                        const randomY = (Math.random() - 0.5) * window.innerHeight * 0.8;
-                        const randomRotate = (Math.random() - 0.5) * 720;
+                        // Calculate massive explosion spread across viewport
+                        const randomX = (Math.random() - 0.5) * window.innerWidth * 1.2;
+                        const randomY = (Math.random() - 0.5) * window.innerHeight * 1.2;
+                        const randomRotate = (Math.random() - 0.5) * 1080; // Wild rotations
 
-                        letter.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg) scale(0.5)`;
-                        letter.style.opacity = "0.3";
+                        letter.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg) scale(1.3)`;
+                        letter.style.filter = "drop-shadow(0 0 12px #7bf1ff)"; // Keeps them glowing while floating
+                        letter.style.opacity = "0.85";
                     });
 
-                    // Automatically return back after 3 seconds
+                    // Automatically return to base after 3 seconds
                     setTimeout(() => {
                         letters.forEach(letter => {
                             letter.style.transform = "translate(0, 0) rotate(0deg) scale(1)";
+                            letter.style.filter = "none";
                             letter.style.opacity = "1";
                         });
                     }, 3000);
                 };
 
+                // Trigger on hover and on touch
                 wordSpan.addEventListener("mouseenter", triggerExplosion);
                 wordSpan.addEventListener("touchstart", (e) => {
-                    e.preventDefault(); // Prevents double firing on mobile
                     triggerExplosion();
                 });
             });
         }
 
-        // Apply effect to title and paragraph
+        // Run the script
         modernTextSplitter("mystical-title");
         modernTextSplitter("mystical-desc");
 
 
         // ─── ORIGINAL BACKGROUND ANIMATIONS ───
-        // Generating Twinkling Stars
         const starField = document.getElementById('star-field');
         for (let i = 0; i < 90; i++) {
             const star = document.createElement('div');
@@ -319,7 +322,6 @@
             starField.appendChild(star);
         }
 
-        // Shooting Stars Interval
         setInterval(() => {
             const shootingStar = document.createElement('div');
             shootingStar.classList.add('shooting-star');
@@ -330,7 +332,6 @@
             setTimeout(() => { shootingStar.remove(); }, 1800);
         }, 5000);
 
-        // Generating Grass Blades
         const grassField = document.getElementById('grass-field');
         const grassCount = 280;
         for (let i = 0; i < grassCount; i++) {
@@ -344,7 +345,6 @@
             grassField.appendChild(grass);
         }
 
-        // Continuous Glowing Fireflies
         function createFirefly() {
             const firefly = document.createElement('div');
             firefly.classList.add('firefly');
