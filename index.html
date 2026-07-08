@@ -5,138 +5,230 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>রাতের দৃশ্যের গ্রাফিক্স</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            overflow: hidden; /* স্ক্রলবার লুকানোর জন্য */
-            background-color: #000; /* ডিফল্ট কালো ব্যাকগ্রাউন্ড */
+            box-sizing: border-box;
         }
 
-        /* ব্যাকগ্রাউন্ড ছবি */
-        .container {
+        body {
+            background: linear-gradient(to bottom, #010616 0%, #03163a 60%, #0c2d54 100%);
+            overflow: hidden;
             width: 100vw;
             height: 100vh;
-            background-image: url('96008.jpg'); /* আপনার ছবিটির নাম এখানে দিন */
-            background-size: cover;
-            background-position: center;
             position: relative;
         }
 
-        /* ঘাস এবং ফুলের হালকা নড়াচড়া */
-        @keyframes sway {
-            0%, 100% {
-                transform: rotate(-1deg);
-            }
-            50% {
-                transform: rotate(1deg);
-            }
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 40%; /* ছবির নীচের অংশ যেখানে ঘাস আছে */
-            background-image: inherit; /* একই ছবি ব্যবহার */
-            background-position: bottom;
-            background-size: cover;
-            filter: blur(1px); /* হালকা ব্লার, যাতে মনে হয় নড়াচড়া করছে */
-            animation: sway 5s ease-in-out infinite;
-            z-index: 1; /* ঘাস সবার সামনে থাকবে */
-        }
-
-        /* মিটমিট করা তারা */
-        .stars {
+        /* মেঘের মতো হালকা আবহ */
+        .nebula {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 60%; /* ছবির ওপরের অংশ যেখানে আকাশ আছে */
-            z-index: 0; /* তারা ব্যাকগ্রাউন্ডের পেছনে থাকবে */
+            height: 100%;
+            background: radial-gradient(circle at 80% 20%, rgba(24, 78, 119, 0.4), transparent 50%),
+                        radial-gradient(circle at 20% 50%, rgba(12, 45, 84, 0.6), transparent 60%);
+            z-index: 1;
+        }
+
+        /* তারা মিটমিট করার এনিমেশন */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
 
         .star {
             position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
+            background-color: #fff;
             border-radius: 50%;
-            opacity: 0;
-            animation: twinkle 2s infinite ease-in-out;
+            z-index: 2;
+            box-shadow: 0 0 4px #fff;
         }
-
-        @keyframes twinkle {
-            0%, 100% {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        /* বিভিন্ন সাইজের তারা তৈরি করার জন্য CSS */
-        .star:nth-child(1) { top: 10%; left: 15%; animation-delay: 0.1s; }
-        .star:nth-child(2) { top: 25%; left: 30%; animation-delay: 0.3s; width: 3px; height: 3px;}
-        .star:nth-child(3) { top: 40%; left: 10%; animation-delay: 0.5s; }
-        .star:nth-child(4) { top: 5%; left: 50%; animation-delay: 0.7s; }
-        .star:nth-child(5) { top: 18%; left: 70%; animation-delay: 0.9s; width: 2px; height: 2px;}
-        .star:nth-child(6) { top: 35%; left: 85%; animation-delay: 1.1s; }
-        .star:nth-child(7) { top: 50%; left: 20%; animation-delay: 1.3s; }
-        .star:nth-child(8) { top: 60%; left: 40%; animation-delay: 1.5s; width: 1px; height: 1px;}
-        .star:nth-child(9) { top: 5%; left: 80%; animation-delay: 1.7s; }
-        .star:nth-child(10) { top: 22%; left: 95%; animation-delay: 1.9s; }
-        /* আপনি এখানে আরও তারা যোগ করতে পারেন */
 
         /* শুটিং স্টার */
-        .shooting-star {
-            position: absolute;
-            top: 0;
-            left: -100px;
-            width: 100px;
-            height: 2px;
-            background: linear-gradient(-45deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
-            filter: drop-shadow(0 0 6px rgba(255, 255, 255, 1));
-            animation: shooting 3s linear infinite;
-        }
-
-        @keyframes shooting {
+        @keyframes shoot {
             0% {
-                transform: translateX(0) translateY(0) rotate(-45deg);
+                transform: translate(0, 0) rotate(-35deg) scale(0);
+                opacity: 0;
+            }
+            10% {
                 opacity: 1;
+                transform: translate(-10px, 7px) rotate(-35deg) scale(1);
             }
             100% {
-                transform: translateX(100vw) translateY(100vh) rotate(-45deg);
+                transform: translate(-600px, 420px) rotate(-35deg) scale(1);
                 opacity: 0;
             }
         }
 
+        .shooting-star {
+            position: absolute;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+            z-index: 2;
+            opacity: 0;
+        }
+
+        /* ঘাস ও ফুলের কন্টেইনার */
+        .field {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 65%;
+            z-index: 5;
+        }
+
+        /* ঘাসের ব্লেড জেনারেট করার বেসিক স্টাইল */
+        .grass {
+            position: absolute;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to top, #021a1e, #053b32, #0d7057);
+            border-radius: 50% 50% 0 0;
+            transform-origin: bottom center;
+        }
+
+        /* জোনাকি পোকা বা গ্লোয়িং ডট */
+        @keyframes float-glow {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
+            50% { transform: translateY(-20px) translateX(10px); opacity: 0.9; filter: drop-shadow(0 0 12px #00f3ff); }
+        }
+
+        .firefly {
+            position: absolute;
+            background: radial-gradient(circle, #7bf1ff 0%, rgba(0, 212, 255, 0.8) 40%, transparent 100%);
+            border-radius: 50%;
+            z-index: 6;
+            filter: drop-shadow(0 0 6px #00d4ff);
+        }
+
+        /* মেইন ফায়ারফ্লাই বা উজ্জ্বল ফুল */
+        .main-flower {
+            position: absolute;
+            bottom: 25%;
+            left: 60%;
+            width: 80px;
+            height: 80px;
+            z-index: 10;
+            transform-origin: bottom center;
+            animation: flower-sway 4s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 15px rgba(123, 241, 255, 0.8));
+        }
+
+        @keyframes flower-sway {
+            0% { transform: rotate(-2deg) translateX(-2px); }
+            100% { transform: rotate(3deg) translateX(2px); }
+        }
+
+        /* উইন্ড বা বাতাস এনিমেশন ঘাসের জন্য */
+        @keyframes wind {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(3deg); }
+        }
+        
+        @keyframes wind-reverse {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-2.5deg); }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- তারার কন্টেইনার -->
-        <div class="stars">
-            <!-- আপনি আরও .star ডিব যোগ করতে পারেন -->
-            <div class="star"></div>
-            <div class="star"></div>
-            <div class="star"></div>
-            <div class="star"></div>
-            <div class="star"></div>
-            <div class="star"></div>
-            <div class="star"></div>
-            <div class="star"></div>
-            <div class="star"></div>
-            <div class="star"></div>
-        </div>
 
-        <!-- শুটিং স্টার -->
-        <div class="shooting-star"></div>
-        <div class="shooting-star" style="animation-delay: 1s;"></div>
-        <div class="shooting-star" style="animation-delay: 2s;"></div>
-    </div>
+    <div class="nebula"></div>
+    <div id="star-field"></div>
+    <div class="field" id="grass-field"></div>
+
+    <!-- গ্লোয়িং নীল ফুল (SVG দিয়ে নিখুঁত করা হয়েছে) -->
+    <svg class="main-flower" viewBox="0 0 100 100">
+        <!-- ডাঁটা -->
+        <path d="M50,100 Q45,70 50,50" stroke="#094a3a" stroke-width="3" fill="none" />
+        <!-- পাপড়িগুলো -->
+        <g transform="translate(50,50)">
+            <ellipse cx="0" cy="-20" rx="12" ry="22" fill="#a6f1ff" opacity="0.95"/>
+            <ellipse cx="0" cy="20" rx="12" ry="22" fill="#76deff" opacity="0.85"/>
+            <ellipse cx="-20" cy="0" rx="22" ry="12" fill="#8ee5ff" opacity="0.9"/>
+            <ellipse cx="20" cy="0" rx="22" ry="12" fill="#76deff" opacity="0.9"/>
+            <ellipse cx="-15" cy="-15" rx="16" ry="16" fill="#bbf5ff" opacity="0.9"/>
+            <ellipse cx="15" cy="15" rx="16" ry="16" fill="#60d3ff" opacity="0.8"/>
+            <ellipse cx="15" cy="-15" rx="16" ry="16" fill="#8ee5ff" opacity="0.9"/>
+            <ellipse cx="-15" cy="15" rx="16" ry="16" fill="#52cdff" opacity="0.85"/>
+            <!-- মাঝখানের অংশ -->
+            <circle cx="0" cy="0" r="6" fill="#006680"/>
+            <circle cx="0" cy="0" r="3" fill="#fff"/>
+        </g>
+    </svg>
+
+    <script>
+        // অটোমেটিক তারা তৈরি করার স্ক্রিপ্ট
+        const starField = document.getElementById('star-field');
+        const starCount = 80;
+
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 2 + 1;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.top = `${Math.random() * 60}%`;
+            star.style.left = `${Math.random() * 100}%`;
+            
+            // র্যান্ডম মিটমিট স্পিড
+            star.style.animation = `twinkle ${Math.random() * 3 + 2}s infinite ease-in-out`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            
+            starField.appendChild(star);
+        }
+
+        // শুটিং স্টার লুপ
+        setInterval(() => {
+            const shootingStar = document.createElement('div');
+            shootingStar.classList.add('shooting-star');
+            shootingStar.style.top = `${Math.random() * 30}%`;
+            shootingStar.style.right = `${Math.random() * 20}%`;
+            shootingStar.style.animation = `shoot 1.5s linear forwards`;
+            
+            document.body.appendChild(shootingStar);
+            
+            setTimeout(() => {
+                shootingStar.remove();
+            }, 1500);
+        }, 4000); // প্রতি ৪ সেকেন্ড পর পর শুটিং স্টার পড়বে
+
+        // ঘাস এবং ছোট নীল ফুল/জোনাকি জেনারেটর
+        const grassField = document.getElementById('grass-field');
+        const grassCount = 250;
+
+        for (let i = 0; i < grassCount; i++) {
+            const grass = document.createElement('div');
+            grass.classList.add('grass');
+            const height = Math.random() * 150 + 80; // র্যান্ডম লম্বা
+            grass.style.height = `${height}px`;
+            grass.style.left = `${Math.random() * 100}%`;
+            
+            // বাতাসের দোলা
+            const anim = Math.random() > 0.5 ? 'wind' : 'wind-reverse';
+            grass.style.animation = `${anim} ${Math.random() * 3 + 3}s infinite ease-in-out alternate`;
+            grass.style.animationDelay = `${Math.random() * 2}s`;
+            
+            grassField.appendChild(grass);
+        }
+
+        // গ্লোয়িং ডট বা ছোট নীল ফুল (জোনাকি স্টাইল)
+        for(let i=0; i<35; i++){
+            const firefly = document.createElement('div');
+            firefly.classList.add('firefly');
+            const size = Math.random() * 6 + 4;
+            firefly.style.width = `${size}px`;
+            firefly.style.height = `${size}px`;
+            firefly.style.bottom = `${Math.random() * 50 + 10}%`;
+            firefly.style.left = `${Math.random() * 100}%`;
+            
+            firefly.style.animation = `float-glow ${Math.random() * 4 + 4}s infinite ease-in-out alternate`;
+            firefly.style.animationDelay = `${Math.random() * 3}s`;
+            
+            grassField.appendChild(firefly);
+        }
+    </script>
 </body>
 </html>
