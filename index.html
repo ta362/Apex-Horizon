@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, 'SolaimanLipi', sans-serif;
+            font-family: 'Segoe UI', Roboto, 'SolaimanLipi', Arial, sans-serif;
         }
 
         body {
@@ -268,6 +268,7 @@
 </head>
 <body>
 
+    <!-- Header Navigation -->
     <header>
         <a href="#" class="logo">APEX HORIZON</a>
         <nav>
@@ -277,8 +278,9 @@
         </nav>
     </header>
 
+    <!-- Hero Content -->
     <div class="hero-section">
-        <h1 id="mystical-title">আমার প্রিয় *ইন্দু*, আমার বেবি, আমার সুইটি, আমার কচু-মুচু সুইটি, আমার মোমো... ❤️</h1>
+        <h1 id="mystical-title">আমার প্রিয় ইন্দু, আমার বেবি, আমার সুইটি, আমার কচু-মুচু সুইটি, আমার মোমো... ❤️</h1>
         
         <p id="desc-1">জানো, তোমাকে কীভাবে ভালোবাসি সেটা হয়তো কোনো ভাষায় পুরোপুরি বোঝানো সম্ভব নয়। তবুও এই ছোট্ট ওয়েবসাইটটা শুধু তোমার জন্য বানিয়েছি, কারণ আমি চেয়েছিলাম আমার মনের কথাগুলো একটু অন্যরকমভাবে তোমার কাছে পৌঁছে দিতে।</p>
         
@@ -297,10 +299,12 @@
         </div>
     </div>
 
+    <!-- Canvas / Background Fields -->
     <div class="nebula"></div>
     <div id="star-field"></div>
     <div class="field" id="grass-field"></div>
 
+    <!-- Glowing Pink/Red Flower -->
     <svg class="main-flower" viewBox="0 0 100 100">
         <path d="M50,100 Q46,75 50,50" stroke="#2c0514" stroke-width="4" fill="none" />
         <g transform="translate(50,50)">
@@ -318,21 +322,25 @@
     </svg>
 
     <script>
-        // ─── IMPROVED TEXT EXPLOSION SCRIPT FOR BENGALI ───
+        // ─── FIX FOR BENGALI TEXT SEGMENTATION ───
         function modernTextSplitter(elementId) {
             const target = document.getElementById(elementId);
             if(!target) return;
             const textHTML = target.innerHTML;
-            // Split by space, keeping HTML tags like <br> intact if any
-            const words = textHTML.split(/(\s+|<br>)/);
+            
+            // Split by space or <br>タグ
+            const parts = textHTML.split(/(\s+|<br>)/);
             target.innerHTML = ""; 
 
-            words.forEach(word => {
-                if(word.trim() === "" || word === "<br>") {
-                    if(word === "<br>") {
+            // Use Intl.Segmenter for proper Bengali character binding
+            const segmenter = new Intl.Segmenter('bn', { granularity: 'grapheme' });
+
+            parts.forEach(part => {
+                if(part.trim() === "" || part === "<br>") {
+                    if(part === "<br>") {
                         target.appendChild(document.createElement("br"));
                     } else {
-                        target.appendChild(document.createTextNode(word));
+                        target.appendChild(document.createTextNode(part));
                     }
                     return;
                 }
@@ -340,16 +348,17 @@
                 const wordSpan = document.createElement("span");
                 wordSpan.classList.add("interactive-word");
                 
-                // Break word into individual graphemes/letters safely
-                wordSpan.innerHTML = Array.from(word).map(letter => `<span>${letter}</span>`).join("");
+                // Properly segment Bengali words without breaking kar-signs or conjuncts
+                const segments = Array.from(segmenter.segment(part)).map(s => `<span>${s.segment}</span>`).join("");
+                wordSpan.innerHTML = segments;
                 target.appendChild(wordSpan);
 
                 const triggerExplosion = () => {
                     const letters = wordSpan.querySelectorAll("span");
                     letters.forEach(letter => {
-                        const randomX = (Math.random() - 0.5) * window.innerWidth * 1.0;
-                        const randomY = (Math.random() - 0.5) * window.innerHeight * 1.0;
-                        const randomRotate = (Math.random() - 0.5) * 720; 
+                        const randomX = (Math.random() - 0.5) * window.innerWidth * 0.8;
+                        const randomY = (Math.random() - 0.5) * window.innerHeight * 0.8;
+                        const randomRotate = (Math.random() - 0.5) * 540; 
 
                         letter.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg) scale(1.3)`;
                         letter.style.filter = "drop-shadow(0 0 12px #ff7b92)"; 
@@ -372,7 +381,7 @@
             });
         }
 
-        // Run the script for all custom text elements
+        // Run the script for elements
         modernTextSplitter("mystical-title");
         modernTextSplitter("desc-1");
         modernTextSplitter("desc-2");
@@ -409,7 +418,7 @@
         }, 5000);
 
         const grassField = document.getElementById('grass-field');
-        const grassCount = 180; // Optimized count for readability
+        const grassCount = 180;
         for (let i = 0; i < grassCount; i++) {
             const grass = document.createElement('div');
             grass.classList.add('grass');
