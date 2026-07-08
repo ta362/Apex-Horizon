@@ -83,11 +83,16 @@
             user-select: none;
         }
 
-        /* ─── WORD EXPLOSION STYLES (NO BREAKING BENGALI LETTERS) ─── */
+        /* ─── LETTER EXPLOSION STYLES ─── */
         .interactive-word {
             display: inline-block;
             margin-right: 8px;
             margin-bottom: 4px;
+            white-space: nowrap;
+        }
+
+        .interactive-word span {
+            display: inline-block;
             cursor: pointer;
             transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease, filter 1.2s ease;
             transform: translate(0, 0) rotate(0deg) scale(1);
@@ -102,7 +107,7 @@
         }
 
         /* H1 Title Color and Glow */
-        .hero-section h1 .interactive-word {
+        .hero-section h1 .interactive-word span {
             color: #ff9ebb;
             text-shadow: 0 0 12px rgba(255, 123, 146, 0.7);
         }
@@ -117,7 +122,7 @@
             text-align: justify;
         }
         
-        .hero-section p .interactive-word {
+        .hero-section p .interactive-word span {
             color: #e3f2fd;
         }
 
@@ -130,7 +135,7 @@
             border-radius: 0 15px 15px 0;
         }
 
-        .proposal-box p .interactive-word {
+        .proposal-box p .interactive-word span {
             color: #ffb3c1;
             font-weight: 400;
         }
@@ -143,7 +148,7 @@
             margin-bottom: 10px;
             line-height: 1.5;
         }
-        .question-title .interactive-word {
+        .question-title .interactive-word span {
             color: #ff7b92;
             text-shadow: 0 0 10px rgba(255, 123, 146, 0.5);
         }
@@ -280,7 +285,7 @@
         
         <p id="desc-1">হয়তো পৃথিবীর সবচেয়ে সুন্দর প্রেমপত্রও আমার মনের সব কথা প্রকাশ করতে পারবে না। তবুও আজ সাহস করে আমার হৃদয়ের প্রতিটি অনুভূতি তোমার সামনে রেখে দিচ্ছি।</p>
         
-        <p id="desc-2">জানো, তোমার সঙ্গে পরিচয় হওয়ার পর থেকে আমার পৃথিবীটা যেন আগের মতো নেই। তোমার হাসি আমার সবচেয়ে প্রিয় दृश्य, তোমার কণ্ঠ আমার সবচেয়ে প্রিয় সুর, আর তোমার নামটাই আমার সবচেয়ে প্রিয় শব্দ। দিনের শত ব্যস্ততার মাঝেও অজান্তেই তোমার কথাই ভাবি। মনে হয়, আমার প্রতিটি স্বপ্নের শুরু আর শেষ—দুটোই তুমি।</p>
+        <p id="desc-2">জানো, তোমার সঙ্গে পরিচয় হওয়ার পর থেকে আমার পৃথিবীটা যেন আগের মতো নেই। তোমার হাসি আমার সবচেয়ে প্রিয় দৃশ্য, তোমার কণ্ঠ আমার সবচেয়ে প্রিয় সুর, আর তোমার নামটাই আমার সবচেয়ে প্রিয় শব্দ। দিনের শত ব্যস্ততার মাঝেও অজান্তেই তোমার কথাই ভাবি। মনে হয়, আমার প্রতিটি স্বপ্নের শুরু আর শেষ—দুটোই তুমি।</p>
         
         <p id="desc-3">তুমি আমার কাছে শুধু একজন মানুষ নও। তুমি আমার শান্তি, আমার সুখ, আমার ভরসা, আমার হাজারো স্বপ্নের ঠিকানা। যখনই তোমার কথা ভাবি, মনে হয় পৃথিবীতে এর চেয়ে সুন্দর অনুভূতি আর কিছু হতে পারে না। তোমাকে ছাড়া ভবিষ্যতের কোনো ছবিই আমি কল্পনা করতে পারি না।</p>
         
@@ -322,15 +327,17 @@
     </svg>
 
     <script>
-        // ─── WORD-BASED INTERACTIVE SCRIPT FOR PERFECT BENGALI ───
+        // ─── ADVANCED LETTER-BASED EXPLOSION FOR BENGALI ───
         function modernTextSplitter(elementId) {
             const target = document.getElementById(elementId);
             if(!target) return;
             const textHTML = target.innerHTML;
             
-            // Split by space or line breaks to isolate whole words
             const parts = textHTML.split(/(\s+|<br>)/);
             target.innerHTML = ""; 
+
+            // Intl.Segmenter correctly packages complex Bengali glyphs (letters + vowel signs)
+            const segmenter = new Intl.Segmenter('bn', { granularity: 'grapheme' });
 
             parts.forEach(part => {
                 if(part.trim() === "" || part === "<br>") {
@@ -342,36 +349,45 @@
                     return;
                 }
 
-                // Wrap the whole word together so Bengali letters don't split up
                 const wordSpan = document.createElement("span");
                 wordSpan.classList.add("interactive-word");
-                wordSpan.innerText = part;
-                target.appendChild(wordSpan);
+                
+                // Wrap every true Bengali character unit inside its own span
+                const segments = Array.from(segmenter.segment(part));
+                segments.forEach(seg => {
+                    const letterSpan = document.createElement("span");
+                    letterSpan.innerText = seg.segment;
+                    
+                    // Add hover event listener directly to each letter unit
+                    const triggerExplosion = () => {
+                        const randomX = (Math.random() - 0.5) * window.innerWidth * 0.8;
+                        const randomY = (Math.random() - 0.5) * window.innerHeight * 0.8;
+                        const randomRotate = (Math.random() - 0.5) * 720; 
 
-                const triggerExplosion = () => {
-                    const randomX = (Math.random() - 0.5) * window.innerWidth * 0.7;
-                    const randomY = (Math.random() - 0.5) * window.innerHeight * 0.7;
-                    const randomRotate = (Math.random() - 0.5) * 360; 
+                        letterSpan.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg) scale(1.4)`;
+                        letterSpan.style.filter = "drop-shadow(0 0 12px #ff7b92)"; 
+                        letterSpan.style.opacity = "0.85";
 
-                    wordSpan.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg) scale(1.2)`;
-                    wordSpan.style.filter = "drop-shadow(0 0 12px #ff7b92)"; 
-                    wordSpan.style.opacity = "0.85";
+                        setTimeout(() => {
+                            letterSpan.style.transform = "translate(0, 0) rotate(0deg) scale(1)";
+                            letterSpan.style.filter = "none";
+                            letterSpan.style.opacity = "1";
+                        }, 3000);
+                    };
 
-                    setTimeout(() => {
-                        wordSpan.style.transform = "translate(0, 0) rotate(0deg) scale(1)";
-                        wordSpan.style.filter = "none";
-                        wordSpan.style.opacity = "1";
-                    }, 3000);
-                };
+                    letterSpan.addEventListener("mouseenter", triggerExplosion);
+                    letterSpan.addEventListener("touchstart", (e) => {
+                        triggerExplosion();
+                    });
 
-                wordSpan.addEventListener("mouseenter", triggerExplosion);
-                wordSpan.addEventListener("touchstart", (e) => {
-                    triggerExplosion();
+                    wordSpan.appendChild(letterSpan);
                 });
+
+                target.appendChild(wordSpan);
             });
         }
 
-        // Run the script for all updated sections
+        // Run the script for all sections
         modernTextSplitter("mystical-title");
         modernTextSplitter("desc-1");
         modernTextSplitter("desc-2");
