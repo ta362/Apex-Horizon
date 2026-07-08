@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Horizon | Mystical Meadow</title>
+    <title>Apex Horizon | For My Indu</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Roboto, 'SolaimanLipi', sans-serif;
         }
 
         body {
             background: linear-gradient(to bottom, #010616 0%, #02112a 40%, #051d3d 70%, #0b355a 100%);
-            overflow: hidden;
+            overflow-x: hidden;
             width: 100vw;
-            height: 100vh;
+            min-height: 100vh;
             position: relative;
         }
 
@@ -58,36 +58,38 @@
             transition: 0.3s ease;
             opacity: 0.8;
             letter-spacing: 1px;
-            border: 1px solid rgba(123, 241, 255, 0.2);
+            border: 1px solid rgba(255, 241, 241, 0.2);
             padding: 8px 20px;
             border-radius: 20px;
-            background: rgba(123, 241, 255, 0.03);
+            background: rgba(255, 123, 123, 0.03);
         }
 
         nav ul li a:hover {
-            color: #7bf1ff;
+            color: #ff7b92;
             opacity: 1;
-            background: rgba(123, 241, 255, 0.1);
-            box-shadow: 0 0 15px rgba(123, 241, 255, 0.3);
+            background: rgba(255, 123, 123, 0.1);
+            box-shadow: 0 0 15px rgba(255, 123, 123, 0.3);
         }
 
         /* ─── HERO TEXT AREA ─── */
         .hero-section {
-            position: absolute;
-            top: 40%;
+            position: relative;
+            padding-top: 140px;
+            padding-bottom: 100px;
             left: 8%;
-            transform: translateY(-50%);
             color: white;
             z-index: 50;
-            max-width: 600px;
+            max-width: 650px;
             user-select: none;
         }
 
-        /* ─── NEW TEXT EXPLOSION FIXES ─── */
+        /* ─── TEXT EXPLOSION STYLES ─── */
         .interactive-word {
             display: inline-block;
-            margin-right: 10px;
+            margin-right: 8px;
+            margin-bottom: 4px;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .interactive-word span {
@@ -98,81 +100,69 @@
         }
 
         .hero-section h1 {
-            font-size: 52px;
+            font-size: 38px;
             font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 15px;
+            line-height: 1.4;
+            margin-bottom: 25px;
         }
 
         /* H1 Title Text Colors and Glow */
         .hero-section h1 .interactive-word span {
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(123, 241, 255, 0.6);
+            color: #ff9ebb;
+            text-shadow: 0 0 12px rgba(255, 123, 146, 0.7);
         }
 
         /* Paragraph Text Colors */
         .hero-section p {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #a2bccc;
+            font-size: 17px;
+            line-height: 1.8;
+            color: #e3f2fd;
             font-weight: 300;
             margin-bottom: 25px;
+            text-align: justify;
         }
         
         .hero-section p .interactive-word span {
-            color: #a2bccc;
+            color: #e3f2fd;
         }
 
-        /* ─── NEW ADDED SECTIONS STYLES ─── */
-        .sub-heading {
-            font-size: 20px;
-            font-weight: 600;
-            color: #7bf1ff;
-            margin-top: 30px;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .sub-heading .interactive-word span {
-            color: #7bf1ff;
-            text-shadow: 0 0 8px rgba(123, 241, 255, 0.4);
+        /* ─── PROPOSAL BOTTOM HIGHLIGHT ─── */
+        .proposal-box {
+            margin-top: 35px;
+            padding: 20px;
+            border-left: 3px solid #ff7b92;
+            background: rgba(255, 123, 146, 0.05);
+            border-radius: 0 15px 15px 0;
         }
 
-        .stats-container {
-            display: flex;
-            gap: 40px;
-            margin-top: 25px;
+        .proposal-box p .interactive-word span {
+            color: #ffb3c1;
+            font-weight: 400;
         }
 
-        .stat-box h3 {
-            font-size: 32px;
-            font-weight: 800;
-            color: #ffffff;
+        .question-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff7b92;
+            margin-top: 15px;
+            margin-bottom: 10px;
         }
-        .stat-box h3 .interactive-word span {
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        .stat-box p {
-            font-size: 14px;
-            color: #759ba9;
-            margin: 0;
-        }
-        .stat-box p .interactive-word span {
-            color: #759ba9;
+        .question-title .interactive-word span {
+            color: #ff7b92;
+            text-shadow: 0 0 10px rgba(255, 123, 146, 0.5);
         }
 
         /* ─── BACKGROUND & NEBULA EFFECTS ─── */
         .nebula {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 70% 30%, rgba(0, 162, 255, 0.15), transparent 60%),
-                        radial-gradient(circle at 30% 60%, rgba(13, 89, 140, 0.3), transparent 70%);
+            background: radial-gradient(circle at 70% 30%, rgba(255, 0, 106, 0.08), transparent 60%),
+                        radial-gradient(circle at 30% 60%, rgba(13, 89, 140, 0.2), transparent 70%);
             z-index: 1;
+            pointer-events: none;
         }
 
         @keyframes twinkle {
@@ -185,6 +175,7 @@
             background-color: #fff;
             border-radius: 50%;
             z-index: 2;
+            pointer-events: none;
         }
 
         @keyframes shoot {
@@ -200,22 +191,24 @@
             background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
             z-index: 2;
             opacity: 0;
+            pointer-events: none;
         }
 
         /* ─── MEADOW & GRASS AREA ─── */
         .field {
-            position: absolute;
+            position: fixed;
             bottom: 0;
             width: 100%;
             height: 70%;
             z-index: 5;
+            pointer-events: none;
         }
 
         .grass {
             position: absolute;
             bottom: -10px;
             width: 2.5px;
-            background: linear-gradient(to top, #010f13, #042e2b, #09594b, #11876a);
+            background: linear-gradient(to top, #010f13, #0b222a, #42162b, #871146);
             border-radius: 40% 40% 0 0;
             transform-origin: bottom center;
         }
@@ -228,23 +221,23 @@
 
         .firefly {
             position: absolute;
-            background: radial-gradient(circle, #7bf1ff 0%, rgba(0, 183, 255, 0.6) 50%, transparent 100%);
+            background: radial-gradient(circle, #ffcbd5 0%, rgba(255, 0, 85, 0.6) 50%, transparent 100%);
             border-radius: 50%;
             z-index: 6;
-            filter: drop-shadow(0 0 8px #00d4ff) drop-shadow(0 0 15px #0077ff);
+            filter: drop-shadow(0 0 8px #ff0055) drop-shadow(0 0 15px #ff7b92);
         }
 
-        /* ─── GLOWING BLUE FLOWER ─── */
+        /* ─── GLOWING FLOWER ─── */
         .main-flower {
-            position: absolute;
-            bottom: 18%;
-            left: 65%;
-            width: 90px;
-            height: 90px;
+            position: fixed;
+            bottom: 12%;
+            right: 10%;
+            width: 100px;
+            height: 100px;
             z-index: 10;
             transform-origin: bottom center;
             animation: flower-sway 5s ease-in-out infinite alternate;
-            filter: drop-shadow(0 0 20px rgba(123, 241, 255, 0.8));
+            filter: drop-shadow(0 0 20px rgba(255, 123, 146, 0.8));
         }
 
         @keyframes flower-sway {
@@ -254,95 +247,115 @@
 
         @keyframes wind { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(4deg); } }
         @keyframes wind-reverse { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-3deg); } }
+
+        /* Responsive adjust for smaller screens */
+        @media (max-width: 768px) {
+            .hero-section {
+                left: 5%;
+                padding-right: 5%;
+                max-width: 90%;
+            }
+            .main-flower {
+                right: 5%;
+                bottom: 5%;
+                width: 70px;
+                height: 70px;
+            }
+            .hero-section h1 { font-size: 28px; }
+            .hero-section p { font-size: 15px; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Header Navigation -->
     <header>
         <a href="#" class="logo">APEX HORIZON</a>
         <nav>
             <ul>
-                <li><a href="#projects" id="project-btn">Projects</a></li>
+                <li><a href="#" id="project-btn">Our Story</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Hero Content -->
     <div class="hero-section">
-        <h1 id="mystical-title">Welcome to a Mystical World</h1>
-        <p id="mystical-desc">Explore a bioluminescent atmosphere where nature meets digital art. Click on Projects to discover my tools and applications.</p>
+        <h1 id="mystical-title">আমার প্রিয় *ইন্দু*, আমার বেবি, আমার সুইটি, আমার কচু-মুচু সুইটি, আমার মোমো... ❤️</h1>
         
-        <!-- NEW TEXT SECTION 1: The Vision -->
-        <h2 class="sub-heading" id="vision-title">The Art of Coding</h2>
-        <p id="vision-desc">Every line of code is like planting a glowing seed in this digital landscape, creating interactive magic for the curious mind.</p>
+        <p id="desc-1">জানো, তোমাকে কীভাবে ভালোবাসি সেটা হয়তো কোনো ভাষায় পুরোপুরি বোঝানো সম্ভব নয়। তবুও এই ছোট্ট ওয়েবসাইটটা শুধু তোমার জন্য বানিয়েছি, কারণ আমি চেয়েছিলাম আমার মনের কথাগুলো একটু অন্যরকমভাবে তোমার কাছে পৌঁছে দিতে।</p>
+        
+        <p id="desc-2">তুমি আমার জীবনের সেই মানুষ, যার কথা ভাবলেই অজান্তেই মুখে হাসি চলে আসে। তোমার একটি মেসেজ, একটি হাসি, কিংবা শুধু তোমার নামটুকুও আমার পুরো দিনটাকে সুন্দর করে দিতে পারে। তুমি হয়তো বুঝতে পারো না, কিন্তু তুমি আমার কাছে সত্যিই অনেকটা জায়গা জুড়ে আছো।</p>
+        
+        <p id="desc-3">আমি তোমাকে শুধু ভালোবাসি না, আমি তোমাকে সম্মান করি, তোমার যত্ন নিতে চাই, তোমার সব সুখ-দুঃখের সঙ্গী হতে চাই। জীবনের প্রতিটি ছোট-বড় মুহূর্তে তোমার পাশে থাকতে চাই। তোমার হাসির কারণ হতে চাই, আর কষ্টের সময় তোমার ভরসা হতে চাই।</p>
+        
+        <p id="desc-4">আমি নিখুঁত মানুষ নই। আমার ভুল হবে, হয়তো অনেক কিছুতেই আমি পারফেক্ট হতে পারব না। কিন্তু একটা প্রতিশ্রুতি দিতে পারি—তোমাকে ভালোবাসার ক্ষেত্রে আমি কখনো কমতি রাখব না। প্রতিদিন নতুন করে, আগের দিনের থেকেও একটু বেশি ভালোবাসব।</p>
 
-        <!-- NEW TEXT SECTION 2: Interactive Stats -->
-        <div class="stats-container">
-            <div class="stat-box">
-                <h3 id="stat-1">12+</h3>
-                <p id="stat-desc-1">Concepts Built</p>
-            </div>
-            <div class="stat-box">
-                <h3 id="stat-2">99%</h3>
-                <p id="stat-desc-2">Pure Magic</p>
-            </div>
+        <div class="proposal-box">
+            <p id="desc-5">আমার ইন্দু, আমার বেবি, আমার সুইটি, আমার কচু-মুচু সুইটি, আমার মোমো... তুমি কি আমার জীবনের সবচেয়ে সুন্দর গল্পটা হবে? তুমি কি আমার হাতটা ধরে সারাজীবন পাশে থাকবে?</p>
+            
+            <p id="desc-6">যদি তোমার উত্তর "হ্যাঁ" হয়, তাহলে বিশ্বাস করো, পৃথিবীর সবচেয়ে ভাগ্যবান মানুষ আমি হব।</p>
+            
+            <h2 class="question-title" id="question-text">I Love You So Much, My Indu. ❤️<br>Will You Be Mine Forever? 💍🌹</h2>
         </div>
     </div>
 
-    <!-- Canvas / Background Fields -->
     <div class="nebula"></div>
     <div id="star-field"></div>
     <div class="field" id="grass-field"></div>
 
-    <!-- Glowing Blue Flower -->
     <svg class="main-flower" viewBox="0 0 100 100">
-        <path d="M50,100 Q46,75 50,50" stroke="#052c24" stroke-width="4" fill="none" />
+        <path d="M50,100 Q46,75 50,50" stroke="#2c0514" stroke-width="4" fill="none" />
         <g transform="translate(50,50)">
-            <ellipse cx="0" cy="-22" rx="14" ry="24" fill="#c2f7ff" opacity="0.95"/>
-            <ellipse cx="0" cy="22" rx="14" ry="24" fill="#69dbff" opacity="0.85"/>
-            <ellipse cx="-22" cy="0" rx="24" ry="14" fill="#8ae2ff" opacity="0.9"/>
-            <ellipse cx="22" cy="0" rx="24" ry="14" fill="#52cfff" opacity="0.9"/>
-            <ellipse cx="-16" cy="-16" rx="18" ry="18" fill="#a8f0ff" opacity="0.9"/>
-            <ellipse cx="16" cy="16" rx="18" ry="18" fill="#42c5ff" opacity="0.8"/>
-            <ellipse cx="16" cy="-16" rx="18" ry="18" fill="#8ae2ff" opacity="0.9"/>
-            <ellipse cx="-16" cy="16" rx="18" ry="18" fill="#32bfff" opacity="0.85"/>
-            <circle cx="0" cy="0" r="7" fill="#005b73"/>
+            <ellipse cx="0" cy="-22" rx="14" ry="24" fill="#ffc2d1" opacity="0.95"/>
+            <ellipse cx="0" cy="22" rx="14" ry="24" fill="#ff69b4" opacity="0.85"/>
+            <ellipse cx="-22" cy="0" rx="24" ry="14" fill="#ff8ab4" opacity="0.9"/>
+            <ellipse cx="22" cy="0" rx="24" ry="14" fill="#ff527b" opacity="0.9"/>
+            <ellipse cx="-16" cy="-16" rx="18" ry="18" fill="#ffa8c5" opacity="0.9"/>
+            <ellipse cx="16" cy="16" rx="18" ry="18" fill="#ff4273" opacity="0.8"/>
+            <ellipse cx="16" cy="-16" rx="18" ry="18" fill="#ff8a9e" opacity="0.9"/>
+            <ellipse cx="-16" cy="16" rx="18" ry="18" fill="#ff3260" opacity="0.85"/>
+            <circle cx="0" cy="0" r="7" fill="#730029"/>
             <circle cx="0" cy="0" r="3" fill="#fff"/>
         </g>
     </svg>
 
     <script>
-        // ─── IMPROVED TEXT EXPLOSION SCRIPT ───
+        // ─── IMPROVED TEXT EXPLOSION SCRIPT FOR BENGALI ───
         function modernTextSplitter(elementId) {
             const target = document.getElementById(elementId);
             if(!target) return;
-            const textHTML = target.innerText;
-            const words = textHTML.split(" ");
+            const textHTML = target.innerHTML;
+            // Split by space, keeping HTML tags like <br> intact if any
+            const words = textHTML.split(/(\s+|<br>)/);
             target.innerHTML = ""; 
 
             words.forEach(word => {
+                if(word.trim() === "" || word === "<br>") {
+                    if(word === "<br>") {
+                        target.appendChild(document.createElement("br"));
+                    } else {
+                        target.appendChild(document.createTextNode(word));
+                    }
+                    return;
+                }
+
                 const wordSpan = document.createElement("span");
                 wordSpan.classList.add("interactive-word");
                 
-                // Break word into letters wrapped in spans
-                wordSpan.innerHTML = word.split("").map(letter => `<span>${letter}</span>`).join("");
+                // Break word into individual graphemes/letters safely
+                wordSpan.innerHTML = Array.from(word).map(letter => `<span>${letter}</span>`).join("");
                 target.appendChild(wordSpan);
 
                 const triggerExplosion = () => {
                     const letters = wordSpan.querySelectorAll("span");
                     letters.forEach(letter => {
-                        // Calculate massive explosion spread across viewport
-                        const randomX = (Math.random() - 0.5) * window.innerWidth * 1.2;
-                        const randomY = (Math.random() - 0.5) * window.innerHeight * 1.2;
-                        const randomRotate = (Math.random() - 0.5) * 1080; // Wild rotations
+                        const randomX = (Math.random() - 0.5) * window.innerWidth * 1.0;
+                        const randomY = (Math.random() - 0.5) * window.innerHeight * 1.0;
+                        const randomRotate = (Math.random() - 0.5) * 720; 
 
                         letter.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRotate}deg) scale(1.3)`;
-                        letter.style.filter = "drop-shadow(0 0 12px #7bf1ff)"; // Keeps them glowing while floating
+                        letter.style.filter = "drop-shadow(0 0 12px #ff7b92)"; 
                         letter.style.opacity = "0.85";
                     });
 
-                    // Automatically return to base after 3 seconds
                     setTimeout(() => {
                         letters.forEach(letter => {
                             letter.style.transform = "translate(0, 0) rotate(0deg) scale(1)";
@@ -352,7 +365,6 @@
                     }, 3000);
                 };
 
-                // Trigger on hover and on touch
                 wordSpan.addEventListener("mouseenter", triggerExplosion);
                 wordSpan.addEventListener("touchstart", (e) => {
                     triggerExplosion();
@@ -360,15 +372,15 @@
             });
         }
 
-        // Run the script for old and new text elements
+        // Run the script for all custom text elements
         modernTextSplitter("mystical-title");
-        modernTextSplitter("mystical-desc");
-        modernTextSplitter("vision-title");
-        modernTextSplitter("vision-desc");
-        modernTextSplitter("stat-1");
-        modernTextSplitter("stat-desc-1");
-        modernTextSplitter("stat-2");
-        modernTextSplitter("stat-desc-2");
+        modernTextSplitter("desc-1");
+        modernTextSplitter("desc-2");
+        modernTextSplitter("desc-3");
+        modernTextSplitter("desc-4");
+        modernTextSplitter("desc-5");
+        modernTextSplitter("desc-6");
+        modernTextSplitter("question-text");
 
 
         // ─── ORIGINAL BACKGROUND ANIMATIONS ───
@@ -397,11 +409,11 @@
         }, 5000);
 
         const grassField = document.getElementById('grass-field');
-        const grassCount = 280;
+        const grassCount = 180; // Optimized count for readability
         for (let i = 0; i < grassCount; i++) {
             const grass = document.createElement('div');
             grass.classList.add('grass');
-            grass.style.height = `${Math.random() * 180 + 90}px`;
+            grass.style.height = `${Math.random() * 140 + 70}px`;
             grass.style.left = `${Math.random() * 100}%`;
             const anim = Math.random() > 0.5 ? 'wind' : 'wind-reverse';
             grass.style.animation = `${anim} ${Math.random() * 4 + 3}s infinite ease-in-out alternate`;
@@ -410,26 +422,27 @@
         }
 
         function createFirefly() {
+            if (document.querySelectorAll('.firefly').length > 30) return;
             const firefly = document.createElement('div');
             firefly.classList.add('firefly');
-            const size = Math.random() * 7 + 4;
+            const size = Math.random() * 6 + 4;
             firefly.style.width = `${size}px`;
             firefly.style.height = `${size}px`;
-            firefly.style.bottom = `${Math.random() * 40 + 5}%`;
+            firefly.style.bottom = `${Math.random() * 30 + 5}%`;
             firefly.style.left = `${Math.random() * 100}%`;
             
             const duration = Math.random() * 4 + 4;
             firefly.style.animation = `float-glow ${duration}s linear forwards`;
             
-            grassField.appendChild(firefly);
+            document.body.appendChild(firefly);
             
             setTimeout(() => {
                 firefly.remove();
             }, duration * 1000);
         }
 
-        setInterval(createFirefly, 300);
-        for(let i=0; i<20; i++) { createFirefly(); }
+        setInterval(createFirefly, 400);
+        for(let i=0; i<15; i++) { createFirefly(); }
     </script>
 </body>
 </html>
